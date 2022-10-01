@@ -516,6 +516,43 @@ public class DateOnlyExtensionTests
     }
     #endregion
 
+    #region Difference of elapsed time
+    [TestMethod]
+    public void DifferenceOfTimeElapsedFromStartOfYear_FirstParameterIsOldestDate_ReturnsAgeBasedOnPartialYearsBeginningOnJanuaryFirst()
+    {
+        // Arrange
+        DateOnly date = new(2020, 2, 13);
+        DateOnly date2 = date.AddDays(450);
+        decimal trueTimeElapsed;
+        decimal testTimeElapsed;
+
+        
+        // Act
+        testTimeElapsed = date.DifferenceOfTimeElapsedFromStartOfYear(date2);
+        trueTimeElapsed = date.FirstDayOfTheYear().AgeCalculator(date2) - date.FirstDayOfTheYear().AgeCalculator(date);
+        
+        // Last Assert
+        Assert.AreEqual(trueTimeElapsed, testTimeElapsed, "Test fail when the first parameter is an older date than the second one");
+    }
+    [TestMethod]
+    public void DifferenceOfTimeElapsedFromStartOfYear_SecondParameterIsOldestDate_ReturnsAgeBasedOnPartialYearsBeginningOnJanuaryFirst()
+    {
+        // Arrange
+        DateOnly date = new(2020, 2, 13);
+        DateOnly date2 = date.AddDays(450);
+        decimal trueTimeElapsed;
+        decimal testTimeElapsed;
+
+
+        // Act
+        testTimeElapsed = date2.DifferenceOfTimeElapsedFromStartOfYear(date);
+        trueTimeElapsed = date.FirstDayOfTheYear().AgeCalculator(date2) - date.FirstDayOfTheYear().AgeCalculator(date);
+
+        // Last Assert
+        Assert.AreEqual(trueTimeElapsed, testTimeElapsed, "Test fail when the first parameter is an older date than the second one");
+    }
+    #endregion
+
     #region NumberOfCompleteYears
     [TestMethod]
     public void NumberOfCompleteYears_EqualsAgeLastBirthday()
@@ -536,10 +573,98 @@ public class DateOnlyExtensionTests
 
     #region NumberOfCompleteMonths
     [TestMethod]
-    public void NumberOfCompleteMonths_ReturnsRightNumberOfFullMonths()
+    public void NumberOfCompleteMonths_MonthFirstDateIsLowerThanMonthSecondDate_DayOfFirstDateIsLowerThanDayOfSecondDate_ReturnsRightNumberOfFullMonths()
     {
         // Arrange
-        DateOnly[] dates = Create2Dates();
+        DateOnly[] dates = new DateOnly[] 
+        {
+            new(2020, 2, 3),
+            new(2026, 3, 4)
+        };
+        DateOnly temporaryDate;
+        int numberOfCompleteYears;
+        int completedMonthOfLastYear = 0;
+        int trueNumberOfCompleteMonths;
+        int testNumberOfCompleteMonths;
+
+        // Act
+        numberOfCompleteYears = dates[0].NumberOfCompleteYears(dates[1]);
+        temporaryDate = dates[0].AddYears(numberOfCompleteYears);
+        for (; completedMonthOfLastYear < 12; completedMonthOfLastYear++)
+        {
+            if (temporaryDate.AddMonths(completedMonthOfLastYear) >= dates[1]) break;
+        }
+        trueNumberOfCompleteMonths = completedMonthOfLastYear - 1 + 12 * numberOfCompleteYears;
+        testNumberOfCompleteMonths = dates[0].NumberOfCompleteMonths(dates[1]);
+
+        // Assert
+        Assert.AreEqual(trueNumberOfCompleteMonths, testNumberOfCompleteMonths);
+    }
+    [TestMethod]
+    public void NumberOfCompleteMonths_MonthFirstDateIsLowerThanMonthSecondDate_DayOfFirstDateIsGreaterThanDayOfSecondDate_ReturnsRightNumberOfFullMonths()
+    {
+        // Arrange
+        DateOnly[] dates = new DateOnly[]
+        {
+            new(2020, 2, 5),
+            new(2026, 3, 4)
+        };
+        DateOnly temporaryDate;
+        int numberOfCompleteYears;
+        int completedMonthOfLastYear = 0;
+        int trueNumberOfCompleteMonths;
+        int testNumberOfCompleteMonths;
+
+        // Act
+        numberOfCompleteYears = dates[0].NumberOfCompleteYears(dates[1]);
+        temporaryDate = dates[0].AddYears(numberOfCompleteYears);
+        for (; completedMonthOfLastYear < 12; completedMonthOfLastYear++)
+        {
+            if (temporaryDate.AddMonths(completedMonthOfLastYear) >= dates[1]) break;
+        }
+        trueNumberOfCompleteMonths = completedMonthOfLastYear - 1 + 12 * numberOfCompleteYears;
+        testNumberOfCompleteMonths = dates[0].NumberOfCompleteMonths(dates[1]);
+
+        // Assert
+        Assert.AreEqual(trueNumberOfCompleteMonths, testNumberOfCompleteMonths);
+    }
+    [TestMethod]
+    public void NumberOfCompleteMonths_MonthFirstDateIsGreaterThanMonthSecondDate_DayOfFirstDateIsLowerThanDayOfSecondDate_ReturnsRightNumberOfFullMonths()
+    {
+        // Arrange
+        DateOnly[] dates = new DateOnly[]
+        {
+            new(2020, 4, 3),
+            new(2026, 3, 4)
+        };
+        DateOnly temporaryDate;
+        int numberOfCompleteYears;
+        int completedMonthOfLastYear = 0;
+        int trueNumberOfCompleteMonths;
+        int testNumberOfCompleteMonths;
+
+        // Act
+        numberOfCompleteYears = dates[0].NumberOfCompleteYears(dates[1]);
+        temporaryDate = dates[0].AddYears(numberOfCompleteYears);
+        for (; completedMonthOfLastYear < 12; completedMonthOfLastYear++)
+        {
+            if (temporaryDate.AddMonths(completedMonthOfLastYear) >= dates[1]) break;
+        }
+        trueNumberOfCompleteMonths = completedMonthOfLastYear - 1 + 12 * numberOfCompleteYears;
+        testNumberOfCompleteMonths = dates[0].NumberOfCompleteMonths(dates[1]);
+
+        // Assert
+        Assert.AreEqual(trueNumberOfCompleteMonths, testNumberOfCompleteMonths);
+    }
+    [TestMethod]
+    public void NumberOfCompleteMonths_MonthFirstDateIsGreaterThanMonthSecondDate_DayOfFirstDateIsGreaterThanDayOfSecondDate_ReturnsRightNumberOfFullMonths()
+    {
+        // Arrange
+        DateOnly[] dates = new DateOnly[]
+        {
+            new(2020, 4, 5),
+            new(2026, 3, 4)
+        };
         DateOnly temporaryDate;
         int numberOfCompleteYears;
         int completedMonthOfLastYear = 0;
@@ -563,8 +688,123 @@ public class DateOnlyExtensionTests
     #endregion
 
     #region Determine new dates
-    // Almost all Trivial, no test necessary
+    [TestMethod]
+    public void FirstDayOfTheMonth_AreEquals()
+    {
+        // Arrange
+        DateOnly date = new(2023, 4, 7);
+        DateOnly date2 = new(2023, 4, 1);
 
+        // Act
+        var firstDayOfMonth = date.FirstDayOfTheMonth();
+
+        // Assert
+        Assert.AreEqual(date2, firstDayOfMonth);
+    }
+    [TestMethod]
+    public void FirstDayOfFollowingMonth_AreEquals()
+    {
+        // Arrange
+        DateOnly date = new(2023, 4, 7);
+
+        // Act
+        var expected = date.FirstDayOfTheMonth().AddMonths(1);
+        var actual = date.FirstDayOfFollowingMonth();
+
+        // Assert
+        Assert.AreEqual(expected, actual);
+    }
+    [TestMethod]
+    public void LastDayOfTheMonth_AreEquals()
+    {
+        // Arrange
+        DateOnly date = new(2023, 4, 7);
+
+        // Act
+        var expected = date.FirstDayOfTheMonth().AddMonths(1).AddDays(-1);
+        var actual = date.LastDayOfTheMonth();
+
+        // Assert
+        Assert.AreEqual(expected, actual);
+    }
+    [TestMethod]
+    public void FirstDayOfFollowingOrCoincidantMonth_DateIsAFirstDayOfMonth_AreEquals()
+    {
+        // Arrange
+        DateOnly date = new(2023, 4, 1);
+
+        // Act
+        var expected = date.FirstDayOfTheMonth().AddMonths(date.Day == 1 ? 0 : 1);
+        var actual = date.FirstDayOfFollowingOrCoincidantMonth();
+
+        // Assert
+        Assert.AreEqual(expected, actual);
+    }
+    [TestMethod]
+    public void FirstDayOfFollowingOrCoincidantMonth_DateIsNotFirstDayOfMonth_AreEquals()
+    {
+        // Arrange
+        DateOnly date = new(2023, 4, 2);
+
+        // Act
+        var expected = date.FirstDayOfTheMonth().AddMonths(date.Day == 1 ? 0 : 1);
+        var actual = date.FirstDayOfFollowingOrCoincidantMonth();
+
+        // Assert
+        Assert.AreEqual(expected, actual);
+    }
+    [TestMethod]
+    public void FirstDayOfTheYear_AreEquals()
+    {
+        // Arrange
+        DateOnly date = new(2023, 4, 2);
+
+        // Act
+        var expected = date.FirstDayOfTheMonth().AddMonths(1 - date.Month);
+        var actual = date.FirstDayOfTheYear();
+
+        // Assert
+        Assert.AreEqual(expected, actual);
+    }
+    [TestMethod]
+    public void FirstDayOfFollowingYear_AreEquals()
+    {
+        // Arrange
+        DateOnly date = new(2023, 4, 2);
+
+        // Act
+        var expected = date.FirstDayOfTheMonth().AddMonths(13 - date.Month);
+        var actual = date.FirstDayOfFollowingYear();
+
+        // Assert
+        Assert.AreEqual(expected, actual);
+    }
+    [TestMethod]
+    public void FirstDayOfFollowingOrCoincidantYear_IsFirstDayOfTheYear_AreEquals()
+    {
+        // Arrange
+        DateOnly date = new(2023, 1, 1);
+
+        // Act
+        var expected = date.FirstDayOfTheYear();
+        var actual = date.FirstDayOfFollowingOrCoincidantYear();
+
+        // Assert
+        Assert.AreEqual(expected, actual);
+    }
+    [TestMethod]
+    public void FirstDayOfFollowingOrCoincidantYear_IsNotFirstDayOfTheYear_AreEquals()
+    {
+        // Arrange
+        DateOnly date = new(2023, 1, 2);
+
+        // Act
+        var expected = date.FirstDayOfTheYear().AddYears(1);
+        var actual = date.FirstDayOfFollowingOrCoincidantYear();
+
+        // Assert
+        Assert.AreEqual(expected, actual);
+    }
     [TestMethod]
     public void AddYears_WhenAgeIsPositive_ReturnsTheLastDateCalculatedToGetAge()
     {
