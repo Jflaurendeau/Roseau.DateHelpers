@@ -40,7 +40,6 @@ public static class DateOnlyExtensions
 
         int numberDaysBeforeNearestBirthDay = secondDate.DayOfYear - firstDate.DayOfYear;
         int numberDaysLastYear = numberDaysBeforeNearestBirthDay > 0 ? firstDate.AddYears(1).DayNumber - firstDate.DayNumber : firstDate.DayNumber - firstDate.AddYears(-1).DayNumber;
-
         return numberOfYears + (decimal)numberDaysBeforeNearestBirthDay / numberDaysLastYear;
     }
     /// <summary>
