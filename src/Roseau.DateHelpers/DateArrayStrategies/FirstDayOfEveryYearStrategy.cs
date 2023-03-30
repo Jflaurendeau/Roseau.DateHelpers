@@ -10,10 +10,10 @@ public class FirstDayOfEveryYearStrategy : DateArrayBaseStrategy
 	protected override DateOnly[] CalculateDateArray(DateOnly calculationDate, DateOnly lastDate)
 	{
 		calculationDate = calculationDate.FirstDayOfFollowingOrCoincidantYear();
-		int numberOfFullMonths = calculationDate.NumberOfCompleteYears(lastDate);
-		DateOnly[] paymentDatesArray = new DateOnly[numberOfFullMonths];
+		int numberOfDates = calculationDate.NumberOfCompleteYears(lastDate)+1;
+		DateOnly[] paymentDatesArray = new DateOnly[numberOfDates];
 
-		for (int i = 0; i < numberOfFullMonths; i++)
+		for (int i = 0; i < numberOfDates; i++)
 		{
 			paymentDatesArray[i] = calculationDate.AddYears(i);
 		}

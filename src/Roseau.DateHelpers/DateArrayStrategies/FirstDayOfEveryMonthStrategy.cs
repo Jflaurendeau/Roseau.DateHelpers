@@ -10,10 +10,10 @@ public class FirstDayOfEveryMonthStrategy : DateArrayBaseStrategy
 	protected override DateOnly[] CalculateDateArray(DateOnly calculationDate, DateOnly lastDate)
 	{
 		calculationDate = calculationDate.FirstDayOfFollowingOrCoincidantMonth();
-		int numberOfFullMonths = calculationDate.NumberOfCompleteMonths(lastDate);
-		DateOnly[] paymentDatesArray = new DateOnly[numberOfFullMonths];
+		int numberDates = calculationDate.NumberOfCompleteMonths(lastDate)+1;
+		DateOnly[] paymentDatesArray = new DateOnly[numberDates];
 
-		for (int i = 0; i < numberOfFullMonths; i++)
+		for (int i = 0; i < numberDates; i++)
 		{
 			paymentDatesArray[i] = calculationDate.AddMonths(i);
 		}
