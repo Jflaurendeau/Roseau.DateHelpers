@@ -15,7 +15,7 @@ public class FirstDayOfEveryMonthStrategyUnitTests
 		// Act
 
 		// Assert
-		_ = strategy.GetDates(calculationDate, latestDate);
+		Assert.That.DoesNotThrow(() => strategy.GetDates(calculationDate, latestDate));
 	}
 	[TestMethod]
 	public void CheckOutOfRangeException_LatestDateIsBeforeFirstDate_AssertThrow()
