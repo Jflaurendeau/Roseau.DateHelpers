@@ -103,4 +103,4 @@ jobs:
           tag_prefix: "v"
           major_pattern: "BREAKING CHANGE:"
           minor_pattern: "Feature:"
-          version_format: "v${major}.${minor}.${patch}-Pre-release${increment}"
+          version_format: "v${major}.${minor}.${patch}+${increment}"
