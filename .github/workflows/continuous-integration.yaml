@@ -54,6 +54,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: ${{ env.JDK_VERSION }}
+          distribution: 'zulu'
 
       - name: Cache SonarCloud Packages ☁️📦
         uses: actions/cache@v3
