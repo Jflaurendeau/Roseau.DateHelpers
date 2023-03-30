@@ -1,4 +1,8 @@
-﻿namespace Roseau.DateHelpers.UnitTests;
+﻿using Moq;
+using Roseau.DateHelpers.DateArrayStrategies;
+using System.Collections;
+
+namespace Roseau.DateHelpers.UnitTests;
 
 [TestClass]
 public class OrderedDatesUnitTests
@@ -16,6 +20,84 @@ public class OrderedDatesUnitTests
 		return dateArray;
 	}
 
+	
+	[TestMethod]
+	public void OrderedDates_ArgumentExceptionWithDatesNotSortedInArray_ThrowArgumentException()
+	{
+		// Arrange
+		var strategy = new FirstDayOfEveryMonthStrategy();
+		var dates = strategy.GetDates(new(2022, 3, 5), new(2023, 3, 5));
+		dates[^1] = dates[0];
+		// Act
+
+		// Assert
+		Assert.ThrowsException<ArgumentException>(() => new OrderedDates(dates));
+	}
+	[TestMethod]
+	public void OrderedDates_ArgumentExceptionWithNullStrategy_ThrowArgumentNullException()
+	{
+		// Arrange
+		// Act
+
+		// Assert
+		Assert.ThrowsException<ArgumentNullException>(() => new OrderedDates(null!, new(), new()));
+	}
+	[TestMethod]
+	public void OrderedDates_ArgumentExceptionWithStrategyNotSortedDates_ThrowArgumentException()
+	{
+		// Arrange
+		var calculationDate = new DateOnly(2022, 2, 15);
+		var lastDate = new DateOnly(2023, 2, 28);
+		var strategy = new FirstDayOfEveryMonthStrategy();
+		var dates = strategy.GetDates(calculationDate, lastDate);
+		dates[^1] = dates[0];
+
+		var mockIStrategy = new Mock<IDateArrayStrategy>();
+		mockIStrategy.Setup(m => m.GetDates(calculationDate, lastDate)).Returns(dates);
+		// Act
+
+		// Assert
+		Assert.ThrowsException<ArgumentException>(() => new OrderedDates(mockIStrategy.Object, calculationDate, lastDate));
+	}
+	[TestMethod]
+	public void OrderedDates_Count_ReturnGoodCount()
+	{
+		// Arrange
+		var calculationDate = new DateOnly(2022, 2, 15);
+		var lastDate = new DateOnly(2023, 2, 28);
+		var strategy = new FirstDayOfEveryMonthStrategy();
+		
+		// Act
+		var expectedDates = strategy.GetDates(calculationDate, lastDate);
+		var dates = new OrderedDates(strategy, calculationDate, lastDate);
+
+		// Assert
+		Assert.AreEqual(expectedDates.Length, dates.Count);
+	}
+	[TestMethod]
+	public void OrderedDates_ContainsReallyAValue_ReturnTrue()
+	{
+		// Arrange
+		var strategy = new FirstDayOfEveryMonthStrategy();
+
+		// Act
+		var dates = new OrderedDates(strategy, new(2022, 2, 15), new(2023, 2, 28));
+
+		// Assert
+		Assert.IsTrue(dates.Contains(new(2022,3,1)));
+	}
+	[TestMethod]
+	public void OrderedDates_DoesNotContainsAValue_ReturnFalse()
+	{
+		// Arrange
+		var strategy = new FirstDayOfEveryMonthStrategy();
+
+		// Act
+		var dates = new OrderedDates(strategy, new(2022, 2, 15), new(2023, 2, 28));
+
+		// Assert
+		Assert.IsFalse(dates.Contains(new(2022, 3, 2)));
+	}
 	[TestMethod]
 	public void IsSorted_GivenASortedArry_ReturnsTrue()
 	{
@@ -58,7 +140,7 @@ public class OrderedDatesUnitTests
 		// Act
 
 		// Assert
-		Assert.ThrowsException<ArgumentNullException>(() => OrderedDates.IsSorted(null));
+		Assert.ThrowsException<ArgumentNullException>(() => OrderedDates.IsSorted(null!));
 	}
 	[TestMethod]
 	public void Indexer_IndexOfIndexerSameAsArray_ReturnsTrue()
@@ -89,5 +171,27 @@ public class OrderedDatesUnitTests
 			i++;
 		}
 	}
-	
+	[TestMethod]
+	public void Enumerator_GetIEnumerator_ReturnsTrue()
+	{
+		// Arrange
+		var orderedDates = new OrderedDates(dates);
+		IEnumerable enumerable = (IEnumerable)orderedDates;
+		int i = 0;
+
+		// Act
+
+		// Assert
+		using (var enumerator = (IEnumerator<DateOnly>)enumerable.GetEnumerator())
+		{
+
+			while (enumerator.MoveNext())
+			{
+				Assert.AreEqual(dates[i], enumerator.Current);
+				i++;
+			}
+		}
+		Assert.AreEqual(dates.Length, i);
+	}
+
 }
