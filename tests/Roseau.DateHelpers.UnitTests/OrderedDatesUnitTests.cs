@@ -75,6 +75,26 @@ public class OrderedDatesUnitTests
 		Assert.AreEqual(expectedDates.Length, dates.Count);
 	}
 	[TestMethod]
+	public void OrderedDates_AsSpan_ReturnGoodArray()
+	{
+		// Arrange
+		var calculationDate = new DateOnly(2022, 2, 15);
+		var lastDate = new DateOnly(2023, 2, 28);
+		var strategy = new FirstDayOfEveryMonthStrategy();
+
+		// Act
+		var expectedDates = strategy.GetDates(calculationDate, lastDate);
+		var dates = new OrderedDates(strategy, calculationDate, lastDate);
+		var datesSpan = dates.AsSpan();
+		var count = dates.Count;
+
+		// Assert
+		for (int i = 0; i < count; i++)
+		{
+			Assert.AreEqual(dates[i], datesSpan[i]);
+		}
+	}
+	[TestMethod]
 	public void OrderedDates_ContainsReallyAValue_ReturnTrue()
 	{
 		// Arrange

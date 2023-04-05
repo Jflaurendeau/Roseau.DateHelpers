@@ -23,6 +23,7 @@ public sealed class OrderedDates : IEnumerable<DateOnly>
 	public int Count => dates.Length;
 	public DateOnly this[int index] => dates[index];
 	public ReadOnlyCollection<DateOnly> Dates => Array.AsReadOnly(dates);
+	public ReadOnlySpan<DateOnly> AsSpan() => dates.AsSpan();
 	public bool Contains(DateOnly date) => dates.Contains(date);
 	public IEnumerator<DateOnly> GetEnumerator() => Dates.GetEnumerator();
 
