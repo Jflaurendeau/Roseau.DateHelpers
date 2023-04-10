@@ -152,6 +152,71 @@ public class OrderedDatesUnitTests
 		Assert.IsFalse(dates.Contains(new(2022, 3, 2)));
 	}
 	[TestMethod]
+	[TestCategory("IndexOfOrPreviousElement")]
+	public void IndexOfOrPreviousElement_ElementIsInArray_ReturnGoodIndex()
+	{
+		// Arrange
+		var strategy = new FirstDayOfEveryMonthStrategy();
+		var expectedDates = strategy.GetDates(new(2022, 2, 15), new(2023, 2, 28));
+		var dates = new OrderedDates(expectedDates);
+
+		// Act
+		var date = dates[dates.IndexOfOrPreviousElement(expectedDates[0])];
+		// Assert
+		Assert.AreEqual(expectedDates[0], date);
+	}
+	[TestMethod]
+	[TestCategory("IndexOfOrPreviousElement")]
+	public void IndexOfOrPreviousElement_ElementIsBeforeFirstElementOfArray_ReturnGoodIndex()
+	{
+		// Arrange
+		var strategy = new FirstDayOfEveryMonthStrategy();
+		var expectedDates = strategy.GetDates(new(2022, 2, 15), new(2023, 2, 28));
+		var dates = new OrderedDates(expectedDates);
+
+		// Act
+		var searchedDate = new DateOnly(2022, 2, 2);
+		var expectedIndex = -1;
+		var index = dates.IndexOfOrPreviousElement(searchedDate);
+		
+		// Assert
+		Assert.AreEqual(expectedIndex, index);
+	}
+	[TestMethod]
+	[TestCategory("IndexOfOrPreviousElement")]
+	public void IndexOfOrPreviousElement_ElementIsAfterFirstElementOfArray_ReturnGoodIndex()
+	{
+		// Arrange
+		var strategy = new FirstDayOfEveryMonthStrategy();
+		var expectedDates = strategy.GetDates(new(2022, 2, 15), new(2023, 2, 28));
+		var dates = new OrderedDates(expectedDates);
+
+		// Act
+		var searchedDate = new DateOnly(2022, 3, 2);
+		var expectedDate = new DateOnly(2022, 3, 1);
+		var index = dates.IndexOfOrPreviousElement(searchedDate);
+		var date = dates[index];
+		// Assert
+		Assert.AreEqual(expectedDate, date);
+	}
+	[TestMethod]
+	[TestCategory("IndexOfOrPreviousElement")]
+	public void IndexOfOrPreviousElement_ElementIsAfterLasElementOfArray_ReturnGoodIndex()
+	{
+		// Arrange
+		var strategy = new FirstDayOfEveryMonthStrategy();
+		var expectedDates = strategy.GetDates(new(2022, 2, 15), new(2023, 2, 28));
+		var dates = new OrderedDates(expectedDates);
+
+		// Act
+		var searchedDate = new DateOnly(2023, 3, 1);
+		var expectedDate = new DateOnly(2023, 2, 1);
+		var index = dates.IndexOfOrPreviousElement(searchedDate);
+		var date = dates[index];
+		// Assert
+		Assert.AreEqual(expectedDate, date);
+	}
+	[TestMethod]
 	[TestCategory("IsSorted")]
 	public void IsSorted_GivenASortedArry_ReturnsTrue()
 	{

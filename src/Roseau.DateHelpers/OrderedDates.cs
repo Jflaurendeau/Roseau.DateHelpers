@@ -32,6 +32,19 @@ public sealed class OrderedDates : IEnumerable<DateOnly>, IEquatable<OrderedDate
 
 	public bool Contains(DateOnly date) => 0 <= BinarySearch(date);
 	public int BinarySearch(DateOnly date) => Array.BinarySearch(dates, date);
+	/// <summary>
+	/// Get the index of the date, or if not found, the index of the element that comes before the feeded date.
+	/// </summary>
+	/// <param name="date">The date to search</param>
+	/// <returns>If the feeded date is in the array, the array index associated with that date is returned. 
+	/// If the date is earlier than the first date of the array, -1 is returned.
+	/// Otherwise, the index of the nearest previous date is returned.</returns>
+	public int IndexOfOrPreviousElement(DateOnly date)
+	{
+		int value = BinarySearch(date);
+		if (value >= 0) return value;
+		return ~value - 1;
+	}
 
 	public ReadOnlyCollection<DateOnly> AsCollection() => Array.AsReadOnly(dates);
 	public IEnumerator<DateOnly> GetEnumerator() => AsCollection().GetEnumerator();
