@@ -23,11 +23,11 @@ public sealed class OrderedDates : IEnumerable<DateOnly>, IEquatable<OrderedDate
 	public int Count => dates.Length;
 	public DateOnly this[int index] => dates[index];
 
-	public ReadOnlySpan<DateOnly> AsSpan() => AsSpan(0);
-	public ReadOnlySpan<DateOnly> AsSpan(int start) => AsSpan(start, dates.Length - start);
+	public ReadOnlySpan<DateOnly> AsSpan() => new(dates, 0, dates.Length);
+	public ReadOnlySpan<DateOnly> AsSpan(int start) => new(dates, start, dates.Length - start);
 	public ReadOnlySpan<DateOnly> AsSpan(int start, int length) => new(dates, start, length);
-	public ReadOnlyMemory<DateOnly> AsMemory() => AsMemory(0);
-	public ReadOnlyMemory<DateOnly> AsMemory(int start) => AsMemory(start, dates.Length - start);
+	public ReadOnlyMemory<DateOnly> AsMemory() => new(dates, 0, dates.Length);
+	public ReadOnlyMemory<DateOnly> AsMemory(int start) => new(dates, start, dates.Length - start);
 	public ReadOnlyMemory<DateOnly> AsMemory(int start, int length) => new(dates, start, length);
 
 	public bool Contains(DateOnly date) => 0 <= BinarySearch(date);
