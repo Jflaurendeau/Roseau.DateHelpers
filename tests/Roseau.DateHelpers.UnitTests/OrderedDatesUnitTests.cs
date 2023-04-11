@@ -104,6 +104,49 @@ public class OrderedDatesUnitTests
 		}
 	}
 	[TestMethod]
+	[TestCategory("AsSpan")]
+	public void AsSpan_ReturnSpanOverWithStart_IsTrue()
+	{
+		// Arrange
+		var calculationDate = new DateOnly(2022, 2, 15);
+		var lastDate = new DateOnly(2023, 2, 28);
+		var strategy = new FirstDayOfEveryMonthStrategy();
+
+		// Act
+		var dates = new OrderedDates(strategy, calculationDate, lastDate);
+		var startIndex = 10;
+		var datesSpan = dates.AsSpan(startIndex);
+		var count = dates.Count-startIndex;
+
+		// Assert
+		for (int i = 0; i < count; i++)
+		{
+			Assert.AreEqual(dates[i+startIndex], datesSpan[i]);
+		}
+	}
+	[TestMethod]
+	[TestCategory("AsSpan")]
+	public void AsSpan_ReturnSpanOverArrayWithStartAndLenght_IsTrue()
+	{
+		// Arrange
+		var calculationDate = new DateOnly(2022, 2, 15);
+		var lastDate = new DateOnly(2023, 2, 28);
+		var strategy = new FirstDayOfEveryMonthStrategy();
+
+		// Act
+		var dates = new OrderedDates(strategy, calculationDate, lastDate);
+		var startIndex = 5;
+		var length = 2;
+		var datesSpan = dates.AsSpan(startIndex, length);
+		var count = length;
+
+		// Assert
+		for (int i = 0; i < count; i++)
+		{
+			Assert.AreEqual(dates[i+startIndex], datesSpan[i]);
+		}
+	}
+	[TestMethod]
 	[TestCategory("AsMemory")]
 	public void AsMemory_ReturnMemoryOverArray_IsTrue()
 	{
@@ -123,6 +166,52 @@ public class OrderedDatesUnitTests
 		for (int i = 0; i < count; i++)
 		{
 			Assert.AreEqual(dates[i], datesSpan[i]);
+		}
+	}
+	[TestMethod]
+	[TestCategory("AsMemory")]
+	public void AsMemory_ReturnMemoryOverArrayWithStart_IsTrue()
+	{
+		// Arrange
+		var calculationDate = new DateOnly(2022, 2, 15);
+		var lastDate = new DateOnly(2023, 2, 28);
+		var strategy = new FirstDayOfEveryMonthStrategy();
+
+
+		// Act
+		var dates = new OrderedDates(strategy, calculationDate, lastDate);
+		var startIndex = 10;
+		var datesMemory = dates.AsMemory(startIndex);
+		var datesSpan = datesMemory.Span;
+		var count = dates.Count - startIndex;
+
+		// Assert
+		for (int i = 0; i < count; i++)
+		{
+			Assert.AreEqual(dates[i+startIndex], datesSpan[i]);
+		}
+	}
+	[TestMethod]
+	[TestCategory("AsMemory")]
+	public void AsMemory_ReturnMemoryOverArrayWithStartAndLength_IsTrue()
+	{
+		// Arrange
+		var calculationDate = new DateOnly(2022, 2, 15);
+		var lastDate = new DateOnly(2023, 2, 28);
+		var strategy = new FirstDayOfEveryMonthStrategy();
+
+		// Act
+		var dates = new OrderedDates(strategy, calculationDate, lastDate);
+		var startIndex = 5;
+		var length = 2;
+		var datesMemory = dates.AsMemory(startIndex, length);
+		var datesSpan = datesMemory.Span;
+		var count = length;
+
+		// Assert
+		for (int i = 0; i < count; i++)
+		{
+			Assert.AreEqual(dates[i+startIndex], datesSpan[i]);
 		}
 	}
 	[TestMethod]
