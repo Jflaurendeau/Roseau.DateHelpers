@@ -4,7 +4,7 @@ using Roseau.DateHelpers.DateArrayStrategies;
 
 namespace Roseau.DateHelpers;
 
-public sealed class OrderedDates : IEnumerable<DateOnly>, IEquatable<OrderedDates?>
+public sealed class OrderedDates : IEnumerable<DateOnly>
 {
 	readonly DateOnly[] dates;
 	public OrderedDates(DateOnly[] dates)
@@ -60,28 +60,5 @@ public sealed class OrderedDates : IEnumerable<DateOnly>, IEquatable<OrderedDate
 		DateOnly dateAti = dates[0];
 		while (i <= j && dateAti <= (dateAti = dates[i])) i++;
 		return i > j;
-	}
-	
-	public override int GetHashCode() => ((IStructuralEquatable)dates).GetHashCode(EqualityComparer<DateOnly>.Default);
-	public override bool Equals(object? obj)
-	{
-		if (obj is null)
-			return false;
-		if (obj.GetType() != this.GetType())
-			return false;
-		return Equals(obj as OrderedDates);
-	}
-	public bool Equals(OrderedDates? other)
-	{
-		return other is not null &&
-			   ReferenceEquals(this, other);
-	}
-	public static bool operator ==(OrderedDates? left, OrderedDates? right)
-	{
-		return EqualityComparer<OrderedDates>.Default.Equals(left, right);
-	}
-	public static bool operator !=(OrderedDates? left, OrderedDates? right)
-	{
-		return !(left == right);
 	}
 }
