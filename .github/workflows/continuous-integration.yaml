@@ -85,7 +85,7 @@ jobs:
         run: |
              .\.sonar\scanner\dotnet-sonarscanner begin /k:"Jflaurendeau_Roseau.DateHelpers" /o:"jflaurendeau" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=".\tests\Roseau.DateHelpers.UnitTests\TestResults\coverage.xml"
              dotnet build
-             coverlet .\tests\Roseau.DateHelpers.UnitTests\bin\Debug\net7.0\Roseau.DateHelpers.UnitTests.dll --target "dotnet" --targetargs "test --no-build --no-restore" -f=opencover -o=".\tests\Roseau.DateHelpers.UnitTests\TestResults\coverage.xml"
+             coverlet .\tests\Roseau.DateHelpers.UnitTests\bin\Debug\net8.0\Roseau.DateHelpers.UnitTests.dll --target "dotnet" --targetargs "test --no-build --no-restore" -f=opencover -o=".\tests\Roseau.DateHelpers.UnitTests\TestResults\coverage.xml"
              .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
   Semantic-versioning:
     runs-on: ubuntu-latest
