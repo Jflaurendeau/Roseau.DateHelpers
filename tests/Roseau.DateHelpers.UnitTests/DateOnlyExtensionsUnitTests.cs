@@ -13,6 +13,7 @@ public class DateOnlyExtensionTests
         return dateArray;
     }
 
+    
     #region IsEqualOrBetweenDates Tests
     [TestMethod]
     public void IsEqualOrBetweenDates_IsLowerThanRange_ReturnsFalse()
@@ -78,15 +79,16 @@ public class DateOnlyExtensionTests
 
     #region Age calculator functions
     #region AgeCalculator
+    #region Decimal
     [TestMethod]
-    public void AgeCalculator_IsSymmetricByDate_ReturnsTrue()
+    public void AgeCalculatorDecimal_IsSymmetricByDate_ReturnsTrue()
     {
         // Arrange
         DateOnly[] dates = Create2Dates();
         bool isSymmetric;
 
         // Act
-        isSymmetric = dates[0].AgeCalculator(dates[1]) == dates[1].AgeCalculator(dates[0]);
+        isSymmetric = dates[0].AgeCalculator<decimal>(dates[1]) == dates[1].AgeCalculator<decimal>(dates[0]);
 
         // Assert
         Assert.IsTrue(isSymmetric, "The age is a measure of time. If it start at date1 or start at date 2, it should give the same value.");
@@ -98,7 +100,7 @@ public class DateOnlyExtensionTests
     [DataRow(1)]
     [DataRow(2)]
     [DataRow(11)]
-    public void AgeCalculator_OnlyTheYearIsDifferent_NotOnLeapYear_ReturnsAgeWithAllDecimalsEqualToZero(int i)
+    public void AgeCalculatorDecimal_OnlyTheYearIsDifferent_NotOnLeapYear_ReturnsAgeWithAllDecimalsEqualToZero(int i)
     {
         // Arrange
         DateOnly date1 = new(2019, 3, 3);
@@ -107,7 +109,7 @@ public class DateOnlyExtensionTests
         decimal calculatedAge;
 
         // Act
-        calculatedAge = date1.AgeCalculator(date2);
+        calculatedAge = date1.AgeCalculator<decimal>(date2);
 
         // Assert
         Assert.AreEqual(age, calculatedAge);
@@ -119,7 +121,7 @@ public class DateOnlyExtensionTests
     [DataRow(1)]
     [DataRow(2)]
     [DataRow(11)]
-    public void AgeCalculator_OnlyTheYearIsDifferent_OnLeapYearButNot29February_ReturnsAgeWithAllDecimalsEqualToZero(int i)
+    public void AgeCalculatorDecimal_OnlyTheYearIsDifferent_OnLeapYearButNot29February_ReturnsAgeWithAllDecimalsEqualToZero(int i)
     {
         // Arrange
         DateOnly date1 = new(2020, 3, 3);
@@ -128,7 +130,7 @@ public class DateOnlyExtensionTests
         decimal calculatedAge;
 
         // Act
-        calculatedAge = date1.AgeCalculator(date2);
+        calculatedAge = date1.AgeCalculator<decimal>(date2);
 
         // Assert
         Assert.AreEqual(age, calculatedAge);
@@ -139,7 +141,7 @@ public class DateOnlyExtensionTests
     [DataRow(2)]
     [DataRow(11)]
     [DataRow(13)]
-    public void AgeCalculator_FirstDateOn29FebruaryAndLastDateOn28February_ReturnsAgeWithAllDecimalsEqualToZero(int i)
+    public void AgeCalculatorDecimal_FirstDateOn29FebruaryAndLastDateOn28February_ReturnsAgeWithAllDecimalsEqualToZero(int i)
     {
         // Arrange
         DateOnly date1 = new(2020, 2, 29);
@@ -150,7 +152,7 @@ public class DateOnlyExtensionTests
 
         // Act
         differentOfOneDay = 0;
-        calculatedAge = date1.AgeCalculator(date2);
+        calculatedAge = date1.AgeCalculator<decimal>(date2);
 
         // Assert
         Assert.AreEqual(age + differentOfOneDay, calculatedAge);
@@ -160,7 +162,7 @@ public class DateOnlyExtensionTests
     [DataRow(-7)]
     [DataRow(-6)]
     [DataRow(-1)]
-    public void AgeCalculator_FirstDateOn28FebruaryAndSecondDateOn29February_ReturnsAgeWithAllDecimalsEqualToDifferenceOfOneDay(int i)
+    public void AgeCalculatorDecimal_FirstDateOn28FebruaryAndSecondDateOn29February_ReturnsAgeWithAllDecimalsEqualToDifferenceOfOneDay(int i)
     {
         // Arrange
         DateOnly date1 = new(2020, 2, 29);
@@ -171,7 +173,7 @@ public class DateOnlyExtensionTests
 
         // Act
         differentOfOneDay = (decimal)1 / 366;
-        calculatedAge = date1.AgeCalculator(date2);
+        calculatedAge = date1.AgeCalculator<decimal>(date2);
 
         // Assert
         Assert.AreEqual(age + differentOfOneDay, calculatedAge);
@@ -183,7 +185,7 @@ public class DateOnlyExtensionTests
     [DataRow(4)]
     [DataRow(24)]
     [DataRow(32)]
-    public void AgeCalculator_OnlyLeapYearAndOnlyOn29February_ReturnsAgeWithAllDecimalsEqualToZero(int i)
+    public void AgeCalculatorDecimal_OnlyLeapYearAndOnlyOn29February_ReturnsAgeWithAllDecimalsEqualToZero(int i)
     {
         // Arrange
         DateOnly date1 = new(2020, 2, 29);
@@ -192,13 +194,13 @@ public class DateOnlyExtensionTests
         decimal calculatedAge;
 
         // Act
-        calculatedAge = date1.AgeCalculator(date2);
+        calculatedAge = date1.AgeCalculator<decimal>(date2);
 
         // Assert
         Assert.AreEqual(age, calculatedAge);
     }
     [TestMethod]
-    public void AgeCalculator_BaseDateOnLeapYearAndOn28February_AgeOfLatestOfTwoCalculationDates_ReturnsGreaterAge()
+    public void AgeCalculatorDecimal_BaseDateOnLeapYearAndOn28February_AgeOfLatestOfTwoCalculationDates_ReturnsGreaterAge()
     {
         // Arrange
         DateOnly dateOn28February = new(2020, 2, 28);
@@ -209,7 +211,7 @@ public class DateOnlyExtensionTests
         for (int i = 1; i <= 366 * 5; i++)
         {
             // Act
-            ageDifference = dateOn28February.AgeCalculator(secondCalculationDate) > dateOn28February.AgeCalculator(firstCalculationDate);
+            ageDifference = dateOn28February.AgeCalculator<decimal>(secondCalculationDate) > dateOn28February.AgeCalculator<decimal>(firstCalculationDate);
             // Assert
             Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
             firstCalculationDate = secondCalculationDate;
@@ -217,7 +219,7 @@ public class DateOnlyExtensionTests
         }
     }
     [TestMethod]
-    public void AgeCalculator_BaseDateOnLeapYearAndOn29February_AgeOfLatestOfTwoCalculationDates_ReturnsGreaterAge()
+    public void AgeCalculatorDecimal_BaseDateOnLeapYearAndOn29February_AgeOfLatestOfTwoCalculationDates_ReturnsGreaterAge()
     {
         // Arrange
         DateOnly dateOn28February = new(2020, 2, 29);
@@ -228,7 +230,7 @@ public class DateOnlyExtensionTests
         for (int i = 1; i <= 366 * 5; i++)
         {
             // Act
-            ageDifference = dateOn28February.AgeCalculator(secondCalculationDate) > dateOn28February.AgeCalculator(firstCalculationDate);
+            ageDifference = dateOn28February.AgeCalculator<decimal>(secondCalculationDate) > dateOn28February.AgeCalculator<decimal>(firstCalculationDate);
             // Assert
             Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
             firstCalculationDate = secondCalculationDate;
@@ -236,7 +238,7 @@ public class DateOnlyExtensionTests
         }
     }
     [TestMethod]
-    public void AgeCalculator_BaseDateOnLeapYearAndOn1March_AgeOfLatestOfTwoCalculationDates_ReturnsGreaterAge()
+    public void AgeCalculatorDecimal_BaseDateOnLeapYearAndOn1March_AgeOfLatestOfTwoCalculationDates_ReturnsGreaterAge()
     {
         // Arrange
         DateOnly dateOn28February = new(2020, 3, 1);
@@ -247,7 +249,7 @@ public class DateOnlyExtensionTests
         for (int i = 1; i <= 366 * 5; i++)
         {
             // Act
-            ageDifference = dateOn28February.AgeCalculator(secondCalculationDate) > dateOn28February.AgeCalculator(firstCalculationDate);
+            ageDifference = dateOn28February.AgeCalculator<decimal>(secondCalculationDate) > dateOn28February.AgeCalculator<decimal>(firstCalculationDate);
             // Assert
             Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
             firstCalculationDate = secondCalculationDate;
@@ -255,7 +257,7 @@ public class DateOnlyExtensionTests
         }
     }
     [TestMethod]
-    public void AgeCalculator_BaseDateNotOnLeapYearAndOn28February_AgeOfLatestOfTwoCalculationDates_ReturnsGreaterAge()
+    public void AgeCalculatorDecimal_BaseDateNotOnLeapYearAndOn28February_AgeOfLatestOfTwoCalculationDates_ReturnsGreaterAge()
     {
         // Arrange
         DateOnly dateOn28February = new(2021, 3, 1);
@@ -266,7 +268,7 @@ public class DateOnlyExtensionTests
         for (int i = 1; i <= 366 * 5; i++)
         {
             // Act
-            ageDifference = dateOn28February.AgeCalculator(secondCalculationDate) > dateOn28February.AgeCalculator(firstCalculationDate);
+            ageDifference = dateOn28February.AgeCalculator<decimal>(secondCalculationDate) > dateOn28February.AgeCalculator<decimal>(firstCalculationDate);
             // Assert
             Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
             firstCalculationDate = secondCalculationDate;
@@ -274,7 +276,7 @@ public class DateOnlyExtensionTests
         }
     }
     [TestMethod]
-    public void AgeCalculator_BaseDateNotOnLeapYearAndOn1March_AgeOfLatestOfTwoCalculationDates_ReturnsGreaterAge()
+    public void AgeCalculatorDecimal_BaseDateNotOnLeapYearAndOn1March_AgeOfLatestOfTwoCalculationDates_ReturnsGreaterAge()
     {
         // Arrange
         DateOnly dateOn28February = new(2021, 3, 1);
@@ -285,7 +287,7 @@ public class DateOnlyExtensionTests
         for (int i = 1; i <= 366 * 5; i++)
         {
             // Act
-            ageDifference = dateOn28February.AgeCalculator(secondCalculationDate) > dateOn28February.AgeCalculator(firstCalculationDate);
+            ageDifference = dateOn28February.AgeCalculator<decimal>(secondCalculationDate) > dateOn28February.AgeCalculator<decimal>(firstCalculationDate);
             // Assert
             Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
             firstCalculationDate = secondCalculationDate;
@@ -293,7 +295,7 @@ public class DateOnlyExtensionTests
         }
     }
     [TestMethod]
-    public void AgeCalculator_CalculationDateNotOnLeapYearAndOn1March_AgeOfLatestOfTwoBaseDates_ReturnsLowerAgeOrEqualIf29February()
+    public void AgeCalculatorDecimal_CalculationDateNotOnLeapYearAndOn1March_AgeOfLatestOfTwoBaseDates_ReturnsLowerAgeOrEqualIf29February()
     {
         // Arrange
         DateOnly dateOn28February = new(2021, 3, 1);
@@ -304,7 +306,7 @@ public class DateOnlyExtensionTests
         for (int i = 1; i <= 366 * 5; i++)
         {
             // Act
-            ageDifference = dateOn28February.AgeCalculator(secondCalculationDate) > dateOn28February.AgeCalculator(firstCalculationDate);
+            ageDifference = dateOn28February.AgeCalculator<decimal>(secondCalculationDate) > dateOn28February.AgeCalculator<decimal>(firstCalculationDate);
             if (firstCalculationDate.Day == 29) ageDifference = true;
             // Assert
             Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
@@ -313,7 +315,7 @@ public class DateOnlyExtensionTests
         }
     }
     [TestMethod]
-    public void AgeCalculator_CalculationDateNotOnLeapYearAndOn28February_AgeOfLatestOfTwoBaseDates_ReturnsLowerAgeOrEqualIf29February()
+    public void AgeCalculatorDecimal_CalculationDateNotOnLeapYearAndOn28February_AgeOfLatestOfTwoBaseDates_ReturnsLowerAgeOrEqualIf29February()
     {
         // Arrange
         DateOnly dateOn28February = new(2021, 2, 28);
@@ -324,7 +326,7 @@ public class DateOnlyExtensionTests
         for (int i = 1; i <= 366 * 5; i++)
         {
             // Act
-            ageDifference = dateOn28February.AgeCalculator(secondCalculationDate) > dateOn28February.AgeCalculator(firstCalculationDate);
+            ageDifference = dateOn28February.AgeCalculator<decimal>(secondCalculationDate) > dateOn28February.AgeCalculator<decimal>(firstCalculationDate);
             if (firstCalculationDate.Day == 29) ageDifference = true;
             // Assert
             Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
@@ -333,7 +335,7 @@ public class DateOnlyExtensionTests
         }
     }
     [TestMethod]
-    public void AgeCalculator_CalculationDateOnLeapYearAndOn1March_AgeOfLatestOfTwoBaseDates_ReturnsLowerAgey()
+    public void AgeCalculatorDecimal_CalculationDateOnLeapYearAndOn1March_AgeOfLatestOfTwoBaseDates_ReturnsLowerAgey()
     {
         // Arrange
         DateOnly dateOn28February = new(2020, 3, 1);
@@ -344,7 +346,7 @@ public class DateOnlyExtensionTests
         for (int i = 1; i <= 366 * 5; i++)
         {
             // Act
-            ageDifference = dateOn28February.AgeCalculator(secondCalculationDate) > dateOn28February.AgeCalculator(firstCalculationDate);
+            ageDifference = dateOn28February.AgeCalculator<decimal>(secondCalculationDate) > dateOn28February.AgeCalculator<decimal>(firstCalculationDate);
             // Assert
             Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
             firstCalculationDate = secondCalculationDate;
@@ -352,7 +354,7 @@ public class DateOnlyExtensionTests
         }
     }
     [TestMethod]
-    public void AgeCalculator_CalculationDateOnLeapYearAndOn29February_AgeOfLatestOfTwoBaseDates_ReturnsLowerAge()
+    public void AgeCalculatorDecimal_CalculationDateOnLeapYearAndOn29February_AgeOfLatestOfTwoBaseDates_ReturnsLowerAge()
     {
         // Arrange
         DateOnly dateOn28February = new(2020, 2, 29);
@@ -363,7 +365,7 @@ public class DateOnlyExtensionTests
         for (int i = 1; i <= 366 * 5; i++)
         {
             // Act
-            ageDifference = dateOn28February.AgeCalculator(secondCalculationDate) > dateOn28February.AgeCalculator(firstCalculationDate);
+            ageDifference = dateOn28February.AgeCalculator<decimal>(secondCalculationDate) > dateOn28February.AgeCalculator<decimal>(firstCalculationDate);
             // Assert
             Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
             firstCalculationDate = secondCalculationDate;
@@ -371,7 +373,7 @@ public class DateOnlyExtensionTests
         }
     }
     [TestMethod]
-    public void AgeCalculator_CalculationDateOnLeapYearAndOn28February_AgeOfLatestOfTwoBaseDates_ReturnsLowerAge()
+    public void AgeCalculatorDecimal_CalculationDateOnLeapYearAndOn28February_AgeOfLatestOfTwoBaseDates_ReturnsLowerAge()
     {
         // Arrange
         DateOnly dateOn28February = new(2020, 2, 28);
@@ -382,13 +384,629 @@ public class DateOnlyExtensionTests
         for (int i = 1; i <= 366 * 5; i++)
         {
             // Act
-            ageDifference = dateOn28February.AgeCalculator(secondCalculationDate) > dateOn28February.AgeCalculator(firstCalculationDate);
+            ageDifference = dateOn28February.AgeCalculator<decimal>(secondCalculationDate) > dateOn28February.AgeCalculator<decimal>(firstCalculationDate);
             // Assert
             Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
             firstCalculationDate = secondCalculationDate;
             secondCalculationDate = secondCalculationDate.AddDays(-1);
         }
     }
+    #endregion
+
+    #region Double
+    [TestMethod]
+    public void AgeCalculatorDouble_IsSymmetricByDate_ReturnsTrue()
+    {
+        // Arrange
+        DateOnly[] dates = Create2Dates();
+        bool isSymmetric;
+
+        // Act
+        isSymmetric = dates[0].AgeCalculator<double>(dates[1]) == dates[1].AgeCalculator<double>(dates[0]);
+
+        // Assert
+        Assert.IsTrue(isSymmetric, "The age is a measure of time. If it start at date1 or start at date 2, it should give the same value.");
+    }
+    [TestMethod]
+    [DataRow(-6)]
+    [DataRow(-1)]
+    [DataRow(0)]
+    [DataRow(1)]
+    [DataRow(2)]
+    [DataRow(11)]
+    public void AgeCalculatorDouble_OnlyTheYearIsDifferent_NotOnLeapYear_ReturnsAgeWithAllDecimalsEqualToZero(int i)
+    {
+        // Arrange
+        DateOnly date1 = new(2019, 3, 3);
+        DateOnly date2 = date1.AddYears(i);
+        var age = (double)Math.Abs(i);
+
+        // Act
+        var calculatedAge = date1.AgeCalculator<double>(date2);
+
+        // Assert
+        Assert.AreEqual(age, calculatedAge);
+    }
+    [TestMethod]
+    [DataRow(-6)]
+    [DataRow(-1)]
+    [DataRow(0)]
+    [DataRow(1)]
+    [DataRow(2)]
+    [DataRow(11)]
+    public void AgeCalculatorDouble_OnlyTheYearIsDifferent_OnLeapYearButNot29February_ReturnsAgeWithAllDecimalsEqualToZero(int i)
+    {
+        // Arrange
+        DateOnly date1 = new(2020, 3, 3);
+        DateOnly date2 = date1.AddYears(i);
+        var age = (double)Math.Abs(i);
+
+        // Act
+        var calculatedAge = date1.AgeCalculator<double>(date2);
+
+        // Assert
+        Assert.AreEqual(age, calculatedAge);
+    }
+    [TestMethod]
+    [DataRow(0)]
+    [DataRow(1)]
+    [DataRow(2)]
+    [DataRow(11)]
+    [DataRow(13)]
+    public void AgeCalculatorDouble_FirstDateOn29FebruaryAndLastDateOn28February_ReturnsAgeWithAllDecimalsEqualToZero(int i)
+    {
+        // Arrange
+        DateOnly date1 = new(2020, 2, 29);
+        DateOnly date2 = date1.AddYears(i);
+        var age = (double)Math.Abs(i);
+
+        // Act
+        var differentOfOneDay = 0.0;
+        var calculatedAge = date1.AgeCalculator<double>(date2);
+
+        // Assert
+        Assert.AreEqual(age + differentOfOneDay, calculatedAge);
+    }
+    [TestMethod]
+    [DataRow(-9)]
+    [DataRow(-7)]
+    [DataRow(-6)]
+    [DataRow(-1)]
+    public void AgeCalculatorDouble_FirstDateOn28FebruaryAndSecondDateOn29February_ReturnsAgeWithAllDecimalsEqualToDifferenceOfOneDay(int i)
+    {
+        // Arrange
+        DateOnly date1 = new(2020, 2, 29);
+        DateOnly date2 = date1.AddYears(i);
+        var age = (double)Math.Abs(i);
+
+        // Act
+        var differentOfOneDay = (double)1 / 366;
+        var calculatedAge = date1.AgeCalculator<double>(date2);
+
+        // Assert
+        Assert.AreEqual(age + differentOfOneDay, calculatedAge);
+    }
+    [TestMethod]
+    [DataRow(-4)]
+    [DataRow(-12)]
+    [DataRow(0)]
+    [DataRow(4)]
+    [DataRow(24)]
+    [DataRow(32)]
+    public void AgeCalculatorDouble_OnlyLeapYearAndOnlyOn29February_ReturnsAgeWithAllDecimalsEqualToZero(int i)
+    {
+        // Arrange
+        DateOnly date1 = new(2020, 2, 29);
+        DateOnly date2 = date1.AddYears(i);
+        var age = (double)Math.Abs(i);
+
+        // Act
+        var calculatedAge = date1.AgeCalculator<double>(date2);
+
+        // Assert
+        Assert.AreEqual(age, calculatedAge);
+    }
+    [TestMethod]
+    public void AgeCalculatorDouble_BaseDateOnLeapYearAndOn28February_AgeOfLatestOfTwoCalculationDates_ReturnsGreaterAge()
+    {
+        // Arrange
+        DateOnly dateOn28February = new(2020, 2, 28);
+        DateOnly firstCalculationDate = dateOn28February.AddDays(1);
+        DateOnly secondCalculationDate = firstCalculationDate.AddDays(1);
+        bool ageDifference;
+
+        for (int i = 1; i <= 366 * 5; i++)
+        {
+            // Act
+            ageDifference = dateOn28February.AgeCalculator<double>(secondCalculationDate) > dateOn28February.AgeCalculator<double>(firstCalculationDate);
+            // Assert
+            Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
+            firstCalculationDate = secondCalculationDate;
+            secondCalculationDate = secondCalculationDate.AddDays(1);
+        }
+    }
+    [TestMethod]
+    public void AgeCalculatorDouble_BaseDateOnLeapYearAndOn29February_AgeOfLatestOfTwoCalculationDates_ReturnsGreaterAge()
+    {
+        // Arrange
+        DateOnly dateOn28February = new(2020, 2, 29);
+        DateOnly firstCalculationDate = dateOn28February.AddDays(1);
+        DateOnly secondCalculationDate = firstCalculationDate.AddDays(1);
+        bool ageDifference;
+
+        for (int i = 1; i <= 366 * 5; i++)
+        {
+            // Act
+            ageDifference = dateOn28February.AgeCalculator<double>(secondCalculationDate) > dateOn28February.AgeCalculator<double>(firstCalculationDate);
+            // Assert
+            Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
+            firstCalculationDate = secondCalculationDate;
+            secondCalculationDate = secondCalculationDate.AddDays(1);
+        }
+    }
+    [TestMethod]
+    public void AgeCalculatorDouble_BaseDateOnLeapYearAndOn1March_AgeOfLatestOfTwoCalculationDates_ReturnsGreaterAge()
+    {
+        // Arrange
+        DateOnly dateOn28February = new(2020, 3, 1);
+        DateOnly firstCalculationDate = dateOn28February.AddDays(1);
+        DateOnly secondCalculationDate = firstCalculationDate.AddDays(1);
+        bool ageDifference;
+
+        for (int i = 1; i <= 366 * 5; i++)
+        {
+            // Act
+            ageDifference = dateOn28February.AgeCalculator<double>(secondCalculationDate) > dateOn28February.AgeCalculator<double>(firstCalculationDate);
+            // Assert
+            Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
+            firstCalculationDate = secondCalculationDate;
+            secondCalculationDate = secondCalculationDate.AddDays(1);
+        }
+    }
+    [TestMethod]
+    public void AgeCalculatorDouble_BaseDateNotOnLeapYearAndOn28February_AgeOfLatestOfTwoCalculationDates_ReturnsGreaterAge()
+    {
+        // Arrange
+        DateOnly dateOn28February = new(2021, 3, 1);
+        DateOnly firstCalculationDate = dateOn28February.AddDays(1);
+        DateOnly secondCalculationDate = firstCalculationDate.AddDays(1);
+        bool ageDifference;
+
+        for (int i = 1; i <= 366 * 5; i++)
+        {
+            // Act
+            ageDifference = dateOn28February.AgeCalculator<double>(secondCalculationDate) > dateOn28February.AgeCalculator<double>(firstCalculationDate);
+            // Assert
+            Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
+            firstCalculationDate = secondCalculationDate;
+            secondCalculationDate = secondCalculationDate.AddDays(1);
+        }
+    }
+    [TestMethod]
+    public void AgeCalculatorDouble_BaseDateNotOnLeapYearAndOn1March_AgeOfLatestOfTwoCalculationDates_ReturnsGreaterAge()
+    {
+        // Arrange
+        DateOnly dateOn28February = new(2021, 3, 1);
+        DateOnly firstCalculationDate = dateOn28February.AddDays(1);
+        DateOnly secondCalculationDate = firstCalculationDate.AddDays(1);
+        bool ageDifference;
+
+        for (int i = 1; i <= 366 * 5; i++)
+        {
+            // Act
+            ageDifference = dateOn28February.AgeCalculator<double>(secondCalculationDate) > dateOn28February.AgeCalculator<double>(firstCalculationDate);
+            // Assert
+            Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
+            firstCalculationDate = secondCalculationDate;
+            secondCalculationDate = secondCalculationDate.AddDays(1);
+        }
+    }
+    [TestMethod]
+    public void AgeCalculatorDouble_CalculationDateNotOnLeapYearAndOn1March_AgeOfLatestOfTwoBaseDates_ReturnsLowerAgeOrEqualIf29February()
+    {
+        // Arrange
+        DateOnly dateOn28February = new(2021, 3, 1);
+        DateOnly firstCalculationDate = dateOn28February.AddDays(-1);
+        DateOnly secondCalculationDate = firstCalculationDate.AddDays(-1);
+        bool ageDifference;
+
+        for (int i = 1; i <= 366 * 5; i++)
+        {
+            // Act
+            ageDifference = dateOn28February.AgeCalculator<double>(secondCalculationDate) > dateOn28February.AgeCalculator<double>(firstCalculationDate);
+            if (firstCalculationDate.Day == 29) ageDifference = true;
+            // Assert
+            Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
+            firstCalculationDate = secondCalculationDate;
+            secondCalculationDate = secondCalculationDate.AddDays(-1);
+        }
+    }
+    [TestMethod]
+    public void AgeCalculatorDouble_CalculationDateNotOnLeapYearAndOn28February_AgeOfLatestOfTwoBaseDates_ReturnsLowerAgeOrEqualIf29February()
+    {
+        // Arrange
+        DateOnly dateOn28February = new(2021, 2, 28);
+        DateOnly firstCalculationDate = dateOn28February.AddDays(-1);
+        DateOnly secondCalculationDate = firstCalculationDate.AddDays(-1);
+        bool ageDifference;
+
+        for (int i = 1; i <= 366 * 5; i++)
+        {
+            // Act
+            ageDifference = dateOn28February.AgeCalculator<double>(secondCalculationDate) > dateOn28February.AgeCalculator<double>(firstCalculationDate);
+            if (firstCalculationDate.Day == 29) ageDifference = true;
+            // Assert
+            Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
+            firstCalculationDate = secondCalculationDate;
+            secondCalculationDate = secondCalculationDate.AddDays(-1);
+        }
+    }
+    [TestMethod]
+    public void AgeCalculatorDouble_CalculationDateOnLeapYearAndOn1March_AgeOfLatestOfTwoBaseDates_ReturnsLowerAgey()
+    {
+        // Arrange
+        DateOnly dateOn28February = new(2020, 3, 1);
+        DateOnly firstCalculationDate = dateOn28February.AddDays(-1);
+        DateOnly secondCalculationDate = firstCalculationDate.AddDays(-1);
+        bool ageDifference;
+
+        for (int i = 1; i <= 366 * 5; i++)
+        {
+            // Act
+            ageDifference = dateOn28February.AgeCalculator<double>(secondCalculationDate) > dateOn28February.AgeCalculator<double>(firstCalculationDate);
+            // Assert
+            Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
+            firstCalculationDate = secondCalculationDate;
+            secondCalculationDate = secondCalculationDate.AddDays(-1);
+        }
+    }
+    [TestMethod]
+    public void AgeCalculatorDouble_CalculationDateOnLeapYearAndOn29February_AgeOfLatestOfTwoBaseDates_ReturnsLowerAge()
+    {
+        // Arrange
+        DateOnly dateOn28February = new(2020, 2, 29);
+        DateOnly firstCalculationDate = dateOn28February.AddDays(-1);
+        DateOnly secondCalculationDate = firstCalculationDate.AddDays(-1);
+        bool ageDifference;
+
+        for (int i = 1; i <= 366 * 5; i++)
+        {
+            // Act
+            ageDifference = dateOn28February.AgeCalculator<double>(secondCalculationDate) > dateOn28February.AgeCalculator<double>(firstCalculationDate);
+            // Assert
+            Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
+            firstCalculationDate = secondCalculationDate;
+            secondCalculationDate = secondCalculationDate.AddDays(-1);
+        }
+    }
+    [TestMethod]
+    public void AgeCalculatorDouble_CalculationDateOnLeapYearAndOn28February_AgeOfLatestOfTwoBaseDates_ReturnsLowerAge()
+    {
+        // Arrange
+        DateOnly dateOn28February = new(2020, 2, 28);
+        DateOnly firstCalculationDate = dateOn28February.AddDays(-1);
+        DateOnly secondCalculationDate = firstCalculationDate.AddDays(-1);
+        bool ageDifference;
+
+        for (int i = 1; i <= 366 * 5; i++)
+        {
+            // Act
+            ageDifference = dateOn28February.AgeCalculator<double>(secondCalculationDate) > dateOn28February.AgeCalculator<double>(firstCalculationDate);
+            // Assert
+            Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
+            firstCalculationDate = secondCalculationDate;
+            secondCalculationDate = secondCalculationDate.AddDays(-1);
+        }
+    }
+    #endregion
+
+    #region Float
+    [TestMethod]
+    public void AgeCalculatorFloat_IsSymmetricByDate_ReturnsTrue()
+    {
+        // Arrange
+        DateOnly[] dates = Create2Dates();
+        bool isSymmetric;
+
+        // Act
+        isSymmetric = dates[0].AgeCalculator<float>(dates[1]) == dates[1].AgeCalculator<float>(dates[0]);
+
+        // Assert
+        Assert.IsTrue(isSymmetric, "The age is a measure of time. If it start at date1 or start at date 2, it should give the same value.");
+    }
+    [TestMethod]
+    [DataRow(-6)]
+    [DataRow(-1)]
+    [DataRow(0)]
+    [DataRow(1)]
+    [DataRow(2)]
+    [DataRow(11)]
+    public void AgeCalculatorFloat_OnlyTheYearIsDifferent_NotOnLeapYear_ReturnsAgeWithAllDecimalsEqualToZero(int i)
+    {
+        // Arrange
+        DateOnly date1 = new(2019, 3, 3);
+        DateOnly date2 = date1.AddYears(i);
+        var age = (double)Math.Abs(i);
+
+        // Act
+        var calculatedAge = date1.AgeCalculator<float>(date2);
+
+        // Assert
+        Assert.AreEqual(age, calculatedAge);
+    }
+    [TestMethod]
+    [DataRow(-6)]
+    [DataRow(-1)]
+    [DataRow(0)]
+    [DataRow(1)]
+    [DataRow(2)]
+    [DataRow(11)]
+    public void AgeCalculatorFloat_OnlyTheYearIsDifferent_OnLeapYearButNot29February_ReturnsAgeWithAllDecimalsEqualToZero(int i)
+    {
+        // Arrange
+        DateOnly date1 = new(2020, 3, 3);
+        DateOnly date2 = date1.AddYears(i);
+        var age = (double)Math.Abs(i);
+
+        // Act
+        var calculatedAge = date1.AgeCalculator<float>(date2);
+
+        // Assert
+        Assert.AreEqual(age, calculatedAge);
+    }
+    [TestMethod]
+    [DataRow(0)]
+    [DataRow(1)]
+    [DataRow(2)]
+    [DataRow(11)]
+    [DataRow(13)]
+    public void AgeCalculatorFloat_FirstDateOn29FebruaryAndLastDateOn28February_ReturnsAgeWithAllDecimalsEqualToZero(int i)
+    {
+        // Arrange
+        DateOnly date1 = new(2020, 2, 29);
+        DateOnly date2 = date1.AddYears(i);
+        var age = (float)Math.Abs(i);
+
+        // Act
+        var differentOfOneDay = 0f;
+        var calculatedAge = date1.AgeCalculator<float>(date2);
+
+        // Assert
+        Assert.AreEqual(age + differentOfOneDay, calculatedAge);
+    }
+    [TestMethod]
+    [DataRow(-9)]
+    [DataRow(-7)]
+    [DataRow(-6)]
+    [DataRow(-1)]
+    public void AgeCalculatorFloat_FirstDateOn28FebruaryAndSecondDateOn29February_ReturnsAgeWithAllDecimalsEqualToDifferenceOfOneDay(int i)
+    {
+        // Arrange
+        DateOnly date1 = new(2020, 2, 29);
+        DateOnly date2 = date1.AddYears(i);
+        var age = (float)Math.Abs(i);
+
+        // Act
+        var differentOfOneDay = (float)1 / 366;
+        var calculatedAge = date1.AgeCalculator<float>(date2);
+
+        // Assert
+        Assert.AreEqual(age + differentOfOneDay, calculatedAge);
+    }
+    [TestMethod]
+    [DataRow(-4)]
+    [DataRow(-12)]
+    [DataRow(0)]
+    [DataRow(4)]
+    [DataRow(24)]
+    [DataRow(32)]
+    public void AgeCalculatorFloat_OnlyLeapYearAndOnlyOn29February_ReturnsAgeWithAllDecimalsEqualToZero(int i)
+    {
+        // Arrange
+        DateOnly date1 = new(2020, 2, 29);
+        DateOnly date2 = date1.AddYears(i);
+        var age = (float)Math.Abs(i);
+
+        // Act
+        var calculatedAge = date1.AgeCalculator<float>(date2);
+
+        // Assert
+        Assert.AreEqual(age, calculatedAge);
+    }
+    [TestMethod]
+    public void AgeCalculatorFloat_BaseDateOnLeapYearAndOn28February_AgeOfLatestOfTwoCalculationDates_ReturnsGreaterAge()
+    {
+        // Arrange
+        DateOnly dateOn28February = new(2020, 2, 28);
+        DateOnly firstCalculationDate = dateOn28February.AddDays(1);
+        DateOnly secondCalculationDate = firstCalculationDate.AddDays(1);
+        bool ageDifference;
+
+        for (int i = 1; i <= 366 * 5; i++)
+        {
+            // Act
+            ageDifference = dateOn28February.AgeCalculator<float>(secondCalculationDate) > dateOn28February.AgeCalculator<float>(firstCalculationDate);
+            // Assert
+            Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
+            firstCalculationDate = secondCalculationDate;
+            secondCalculationDate = secondCalculationDate.AddDays(1);
+        }
+    }
+    [TestMethod]
+    public void AgeCalculatorFloat_BaseDateOnLeapYearAndOn29February_AgeOfLatestOfTwoCalculationDates_ReturnsGreaterAge()
+    {
+        // Arrange
+        DateOnly dateOn28February = new(2020, 2, 29);
+        DateOnly firstCalculationDate = dateOn28February.AddDays(1);
+        DateOnly secondCalculationDate = firstCalculationDate.AddDays(1);
+        bool ageDifference;
+
+        for (int i = 1; i <= 366 * 5; i++)
+        {
+            // Act
+            ageDifference = dateOn28February.AgeCalculator<float>(secondCalculationDate) > dateOn28February.AgeCalculator<float>(firstCalculationDate);
+            // Assert
+            Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
+            firstCalculationDate = secondCalculationDate;
+            secondCalculationDate = secondCalculationDate.AddDays(1);
+        }
+    }
+    [TestMethod]
+    public void AgeCalculatorFloat_BaseDateOnLeapYearAndOn1March_AgeOfLatestOfTwoCalculationDates_ReturnsGreaterAge()
+    {
+        // Arrange
+        DateOnly dateOn28February = new(2020, 3, 1);
+        DateOnly firstCalculationDate = dateOn28February.AddDays(1);
+        DateOnly secondCalculationDate = firstCalculationDate.AddDays(1);
+        bool ageDifference;
+
+        for (int i = 1; i <= 366 * 5; i++)
+        {
+            // Act
+            ageDifference = dateOn28February.AgeCalculator<float>(secondCalculationDate) > dateOn28February.AgeCalculator<float>(firstCalculationDate);
+            // Assert
+            Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
+            firstCalculationDate = secondCalculationDate;
+            secondCalculationDate = secondCalculationDate.AddDays(1);
+        }
+    }
+    [TestMethod]
+    public void AgeCalculatorFloat_BaseDateNotOnLeapYearAndOn28February_AgeOfLatestOfTwoCalculationDates_ReturnsGreaterAge()
+    {
+        // Arrange
+        DateOnly dateOn28February = new(2021, 3, 1);
+        DateOnly firstCalculationDate = dateOn28February.AddDays(1);
+        DateOnly secondCalculationDate = firstCalculationDate.AddDays(1);
+        bool ageDifference;
+
+        for (int i = 1; i <= 366 * 5; i++)
+        {
+            // Act
+            ageDifference = dateOn28February.AgeCalculator<float>(secondCalculationDate) > dateOn28February.AgeCalculator<float>(firstCalculationDate);
+            // Assert
+            Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
+            firstCalculationDate = secondCalculationDate;
+            secondCalculationDate = secondCalculationDate.AddDays(1);
+        }
+    }
+    [TestMethod]
+    public void AgeCalculatorFloat_BaseDateNotOnLeapYearAndOn1March_AgeOfLatestOfTwoCalculationDates_ReturnsGreaterAge()
+    {
+        // Arrange
+        DateOnly dateOn28February = new(2021, 3, 1);
+        DateOnly firstCalculationDate = dateOn28February.AddDays(1);
+        DateOnly secondCalculationDate = firstCalculationDate.AddDays(1);
+        bool ageDifference;
+
+        for (int i = 1; i <= 366 * 5; i++)
+        {
+            // Act
+            ageDifference = dateOn28February.AgeCalculator<float>(secondCalculationDate) > dateOn28February.AgeCalculator<float>(firstCalculationDate);
+            // Assert
+            Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
+            firstCalculationDate = secondCalculationDate;
+            secondCalculationDate = secondCalculationDate.AddDays(1);
+        }
+    }
+    [TestMethod]
+    public void AgeCalculatorFloat_CalculationDateNotOnLeapYearAndOn1March_AgeOfLatestOfTwoBaseDates_ReturnsLowerAgeOrEqualIf29February()
+    {
+        // Arrange
+        DateOnly dateOn28February = new(2021, 3, 1);
+        DateOnly firstCalculationDate = dateOn28February.AddDays(-1);
+        DateOnly secondCalculationDate = firstCalculationDate.AddDays(-1);
+        bool ageDifference;
+
+        for (int i = 1; i <= 366 * 5; i++)
+        {
+            // Act
+            ageDifference = dateOn28February.AgeCalculator<float>(secondCalculationDate) > dateOn28February.AgeCalculator<float>(firstCalculationDate);
+            if (firstCalculationDate.Day == 29) ageDifference = true;
+            // Assert
+            Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
+            firstCalculationDate = secondCalculationDate;
+            secondCalculationDate = secondCalculationDate.AddDays(-1);
+        }
+    }
+    [TestMethod]
+    public void AgeCalculatorFloat_CalculationDateNotOnLeapYearAndOn28February_AgeOfLatestOfTwoBaseDates_ReturnsLowerAgeOrEqualIf29February()
+    {
+        // Arrange
+        DateOnly dateOn28February = new(2021, 2, 28);
+        DateOnly firstCalculationDate = dateOn28February.AddDays(-1);
+        DateOnly secondCalculationDate = firstCalculationDate.AddDays(-1);
+        bool ageDifference;
+
+        for (int i = 1; i <= 366 * 5; i++)
+        {
+            // Act
+            ageDifference = dateOn28February.AgeCalculator<float>(secondCalculationDate) > dateOn28February.AgeCalculator<float>(firstCalculationDate);
+            if (firstCalculationDate.Day == 29) ageDifference = true;
+            // Assert
+            Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
+            firstCalculationDate = secondCalculationDate;
+            secondCalculationDate = secondCalculationDate.AddDays(-1);
+        }
+    }
+    [TestMethod]
+    public void AgeCalculatorFloat_CalculationDateOnLeapYearAndOn1March_AgeOfLatestOfTwoBaseDates_ReturnsLowerAgey()
+    {
+        // Arrange
+        DateOnly dateOn28February = new(2020, 3, 1);
+        DateOnly firstCalculationDate = dateOn28February.AddDays(-1);
+        DateOnly secondCalculationDate = firstCalculationDate.AddDays(-1);
+        bool ageDifference;
+
+        for (int i = 1; i <= 366 * 5; i++)
+        {
+            // Act
+            ageDifference = dateOn28February.AgeCalculator<float>(secondCalculationDate) > dateOn28February.AgeCalculator<float>(firstCalculationDate);
+            // Assert
+            Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
+            firstCalculationDate = secondCalculationDate;
+            secondCalculationDate = secondCalculationDate.AddDays(-1);
+        }
+    }
+    [TestMethod]
+    public void AgeCalculatorFloat_CalculationDateOnLeapYearAndOn29February_AgeOfLatestOfTwoBaseDates_ReturnsLowerAge()
+    {
+        // Arrange
+        DateOnly dateOn28February = new(2020, 2, 29);
+        DateOnly firstCalculationDate = dateOn28February.AddDays(-1);
+        DateOnly secondCalculationDate = firstCalculationDate.AddDays(-1);
+        bool ageDifference;
+
+        for (int i = 1; i <= 366 * 5; i++)
+        {
+            // Act
+            ageDifference = dateOn28February.AgeCalculator<float>(secondCalculationDate) > dateOn28February.AgeCalculator<float>(firstCalculationDate);
+            // Assert
+            Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
+            firstCalculationDate = secondCalculationDate;
+            secondCalculationDate = secondCalculationDate.AddDays(-1);
+        }
+    }
+    [TestMethod]
+    public void AgeCalculatorFloat_CalculationDateOnLeapYearAndOn28February_AgeOfLatestOfTwoBaseDates_ReturnsLowerAge()
+    {
+        // Arrange
+        DateOnly dateOn28February = new(2020, 2, 28);
+        DateOnly firstCalculationDate = dateOn28February.AddDays(-1);
+        DateOnly secondCalculationDate = firstCalculationDate.AddDays(-1);
+        bool ageDifference;
+
+        for (int i = 1; i <= 366 * 5; i++)
+        {
+            // Act
+            ageDifference = dateOn28February.AgeCalculator<float>(secondCalculationDate) > dateOn28February.AgeCalculator<float>(firstCalculationDate);
+            // Assert
+            Assert.IsTrue(ageDifference, $"Test fail when {nameof(firstCalculationDate)} is: {firstCalculationDate} and when {nameof(secondCalculationDate)} is: {secondCalculationDate}");
+            firstCalculationDate = secondCalculationDate;
+            secondCalculationDate = secondCalculationDate.AddDays(-1);
+        }
+    }
+    #endregion
+
     #endregion
 
     #region AgeNearestBirthday
@@ -462,10 +1080,12 @@ public class DateOnlyExtensionTests
     #endregion
     #endregion
 
+
     #region Difference between two dates
     #region TimeElapsedFromStartOfYear
+    #region Decimal
     [TestMethod]
-    public void TimeElapsedFromStartOfYear_OnLeapYear_ReturnsRatioOfNumberOfCompletedDaysInYearDividedBy366Days()
+    public void TimeElapsedFromStartOfYearDecimal_OnLeapYear_ReturnsRatioOfNumberOfCompletedDaysInYearDividedBy366Days()
     {
         // Arrange
         DateOnly date = new(2020, 1, 1);
@@ -475,7 +1095,7 @@ public class DateOnlyExtensionTests
         for (decimal i = 0m; i < 366; i++)
         {
             // Act
-            testTimeElapsed = date.TimeElapsedFromStartOfYear();
+            testTimeElapsed = date.TimeElapsedFromStartOfYear<decimal>();
             trueTimeElapsed = i / 366;
 
             // Assert
@@ -483,14 +1103,14 @@ public class DateOnlyExtensionTests
             date = date.AddDays(1);
         }
         // Last Act
-        testTimeElapsed = date.TimeElapsedFromStartOfYear();
+        testTimeElapsed = date.TimeElapsedFromStartOfYear<decimal>();
 
         // Last Assert
         Assert.AreEqual(0m, testTimeElapsed, $"Test fail when {nameof(date)} is: {date} which is the first day of new year");
 
     }
     [TestMethod]
-    public void TimeElapsedFromStartOfYear_NotLeapYear_ReturnsRatioOfNumberOfCompletedDaysInYearDividedBy365Days()
+    public void TimeElapsedFromStartOfYearDecimal_NotLeapYear_ReturnsRatioOfNumberOfCompletedDaysInYearDividedBy365Days()
     {
         // Arrange
         DateOnly date = new(2021, 1, 1);
@@ -500,7 +1120,7 @@ public class DateOnlyExtensionTests
         for (decimal i = 0m; i < 365; i++)
         {
             // Act
-            testTimeElapsed = date.TimeElapsedFromStartOfYear();
+            testTimeElapsed = date.TimeElapsedFromStartOfYear<decimal>();
             trueTimeElapsed = i / 365;
 
             // Assert
@@ -508,12 +1128,117 @@ public class DateOnlyExtensionTests
             date = date.AddDays(1);
         }
         // Last Act
-        testTimeElapsed = date.TimeElapsedFromStartOfYear();
+        testTimeElapsed = date.TimeElapsedFromStartOfYear<decimal>();
 
         // Last Assert
         Assert.AreEqual(0m, testTimeElapsed, $"Test fail when {nameof(date)} is: {date} which is the first day of new year");
 
     }
+    #endregion
+    #region Double
+    [TestMethod]
+    public void TimeElapsedFromStartOfYearDouble_OnLeapYear_ReturnsRatioOfNumberOfCompletedDaysInYearDividedBy366Days()
+    {
+        // Arrange
+        DateOnly date = new(2020, 1, 1);
+        double trueTimeElapsed;
+        double testTimeElapsed;
+
+        for (double i = 0.0; i < 366; i++)
+        {
+            // Act
+            testTimeElapsed = date.TimeElapsedFromStartOfYear<double>();
+            trueTimeElapsed = i / 366;
+
+            // Assert
+            Assert.AreEqual(trueTimeElapsed, testTimeElapsed, $"Test fail when {nameof(date)} is: {date} which is the i-th day of the year: {i}");
+            date = date.AddDays(1);
+        }
+        // Last Act
+        testTimeElapsed = date.TimeElapsedFromStartOfYear<double>();
+
+        // Last Assert
+        Assert.AreEqual(0.0, testTimeElapsed, $"Test fail when {nameof(date)} is: {date} which is the first day of new year");
+
+    }
+    [TestMethod]
+    public void TimeElapsedFromStartOfYearDouble_NotLeapYear_ReturnsRatioOfNumberOfCompletedDaysInYearDividedBy365Days()
+    {
+        // Arrange
+        DateOnly date = new(2021, 1, 1);
+        double trueTimeElapsed;
+        double testTimeElapsed;
+
+        for (double i = 0.0; i < 365; i++)
+        {
+            // Act
+            testTimeElapsed = date.TimeElapsedFromStartOfYear<double>();
+            trueTimeElapsed = i / 365;
+
+            // Assert
+            Assert.AreEqual(trueTimeElapsed, testTimeElapsed, $"Test fail when {nameof(date)} is: {date} which is the i-th day of the year: {i}");
+            date = date.AddDays(1);
+        }
+        // Last Act
+        testTimeElapsed = date.TimeElapsedFromStartOfYear<double>();
+
+        // Last Assert
+        Assert.AreEqual(0.0, testTimeElapsed, $"Test fail when {nameof(date)} is: {date} which is the first day of new year");
+
+    }
+    #endregion
+    #region Float
+    [TestMethod]
+    public void TimeElapsedFromStartOfYearFloat_OnLeapYear_ReturnsRatioOfNumberOfCompletedDaysInYearDividedBy366Days()
+    {
+        // Arrange
+        DateOnly date = new(2020, 1, 1);
+        float trueTimeElapsed;
+        float testTimeElapsed;
+
+        for (float i = 0f; i < 366; i++)
+        {
+            // Act
+            testTimeElapsed = date.TimeElapsedFromStartOfYear<float>();
+            trueTimeElapsed = i / 366;
+
+            // Assert
+            Assert.AreEqual(trueTimeElapsed, testTimeElapsed, $"Test fail when {nameof(date)} is: {date} which is the i-th day of the year: {i}");
+            date = date.AddDays(1);
+        }
+        // Last Act
+        testTimeElapsed = date.TimeElapsedFromStartOfYear<float>();
+
+        // Last Assert
+        Assert.AreEqual(0f, testTimeElapsed, $"Test fail when {nameof(date)} is: {date} which is the first day of new year");
+
+    }
+    [TestMethod]
+    public void TimeElapsedFromStartOfYearFloat_NotLeapYear_ReturnsRatioOfNumberOfCompletedDaysInYearDividedBy365Days()
+    {
+        // Arrange
+        DateOnly date = new(2021, 1, 1);
+        float trueTimeElapsed;
+        float testTimeElapsed;
+
+        for (float i = 0f; i < 365; i++)
+        {
+            // Act
+            testTimeElapsed = date.TimeElapsedFromStartOfYear<float>();
+            trueTimeElapsed = i / 365;
+
+            // Assert
+            Assert.AreEqual(trueTimeElapsed, testTimeElapsed, $"Test fail when {nameof(date)} is: {date} which is the i-th day of the year: {i}");
+            date = date.AddDays(1);
+        }
+        // Last Act
+        testTimeElapsed = date.TimeElapsedFromStartOfYear<float>();
+
+        // Last Assert
+        Assert.AreEqual(0f, testTimeElapsed, $"Test fail when {nameof(date)} is: {date} which is the first day of new year");
+
+    }
+    #endregion
     #endregion
 
     #region Difference of elapsed time
@@ -528,8 +1253,8 @@ public class DateOnlyExtensionTests
 
         
         // Act
-        testTimeElapsed = date.DifferenceOfTimeElapsedFromStartOfYear(date2);
-        trueTimeElapsed = date.FirstDayOfTheYear().AgeCalculator(date2) - date.FirstDayOfTheYear().AgeCalculator(date);
+        testTimeElapsed = date.DifferenceOfTimeElapsedFromStartOfYear<decimal>(date2);
+        trueTimeElapsed = date.FirstDayOfTheYear().AgeCalculator<decimal>(date2) - date.FirstDayOfTheYear().AgeCalculator<decimal>(date);
         
         // Last Assert
         Assert.AreEqual(trueTimeElapsed, testTimeElapsed, "Test fail when the first parameter is an older date than the second one");
@@ -545,13 +1270,15 @@ public class DateOnlyExtensionTests
 
 
         // Act
-        testTimeElapsed = date2.DifferenceOfTimeElapsedFromStartOfYear(date);
-        trueTimeElapsed = date.FirstDayOfTheYear().AgeCalculator(date2) - date.FirstDayOfTheYear().AgeCalculator(date);
+        testTimeElapsed = date2.DifferenceOfTimeElapsedFromStartOfYear<decimal>(date);
+        trueTimeElapsed = date.FirstDayOfTheYear().AgeCalculator<decimal>(date2) - date.FirstDayOfTheYear().AgeCalculator<decimal>(date);
 
         // Last Assert
         Assert.AreEqual(trueTimeElapsed, testTimeElapsed, "Test fail when the first parameter is an older date than the second one");
     }
     #endregion
+    #endregion
+
 
     #region NumberOfCompleteYears
     [TestMethod]
@@ -685,7 +1412,6 @@ public class DateOnlyExtensionTests
         Assert.AreEqual(trueNumberOfCompleteMonths, testNumberOfCompleteMonths);
     }
     #endregion
-    #endregion
 
     #region Determine new dates
     [TestMethod]
@@ -805,13 +1531,15 @@ public class DateOnlyExtensionTests
         // Assert
         Assert.AreEqual(expected, actual);
     }
+
+    #region Decimal
     [TestMethod]
-    public void AddYears_WhenAgeIsPositive_ReturnsTheLastDateCalculatedToGetAge()
+    public void AddYearsDecimal_WhenAgeIsPositive_ReturnsTheLastDateCalculatedToGetAge()
     {
         // Arrange
         DateOnly[] dateOnlies = Create2Dates();
         DateOnly testDate;
-        decimal age = dateOnlies[0].AgeCalculator(dateOnlies[1]);
+        decimal age = dateOnlies[0].AgeCalculator<decimal>(dateOnlies[1]);
 
         // Act
         testDate = dateOnlies[0].AddYears(age);
@@ -820,12 +1548,12 @@ public class DateOnlyExtensionTests
         Assert.AreEqual(dateOnlies[1], testDate, $"Test fail when first and second dates {nameof(dateOnlies)} are: {dateOnlies[0]} and {dateOnlies[1]} which has an {nameof(age)} value of: {age}.");
     }
     [TestMethod]
-    public void AddYears_FirstDateNotOn29February_WhenAgeIsNegative_ReturnsTheFirstDateCalculatedToGetAge()
+    public void AddYearsDecimal_FirstDateNotOn29February_WhenAgeIsNegative_ReturnsTheFirstDateCalculatedToGetAge()
     {
         // Arrange
         DateOnly[] dateOnlies = Create2Dates();
         DateOnly testDate;
-        decimal age = dateOnlies[0].AgeCalculator(dateOnlies[1]);
+        decimal age = dateOnlies[0].AgeCalculator<decimal>(dateOnlies[1]);
 
         // Act
         testDate = dateOnlies[1].AddYears(-age);
@@ -834,7 +1562,7 @@ public class DateOnlyExtensionTests
         Assert.AreEqual(dateOnlies[0], testDate, $"Test fail when first and second dates {nameof(dateOnlies)} are: {dateOnlies[0]} and {dateOnlies[1]} which has an {nameof(age)} value of: {age}.");
     }
     [TestMethod]
-    public void AddYears_FirstDateOn29FebruaryAndLastDateNotOnLeapYear_WhenAgeIsNegative_ReturnsFebruary28CalculatedToGetAge()
+    public void AddYearsDecimal_FirstDateOn29FebruaryAndLastDateNotOnLeapYear_WhenAgeIsNegative_ReturnsFebruary28CalculatedToGetAge()
     {
         // Arrange
         DateOnly[] dateOnlies =
@@ -843,7 +1571,7 @@ public class DateOnlyExtensionTests
                 new(2025, 3, 3),
             };
         DateOnly testDate;
-        decimal age = dateOnlies[0].AgeCalculator(dateOnlies[1]);
+        decimal age = dateOnlies[0].AgeCalculator<decimal>(dateOnlies[1]);
 
         // Act
         testDate = dateOnlies[1].AddYears(-age);
@@ -851,5 +1579,102 @@ public class DateOnlyExtensionTests
         // Assert
         Assert.AreEqual(dateOnlies[0].AddDays(-1), testDate, $"Test fail when first and second dates {nameof(dateOnlies)} are: {dateOnlies[0]} and {dateOnlies[1]} which has an {nameof(age)} value of: {age}.");
     }
+    #endregion
+    #region Double
+    [TestMethod]
+    public void AddYearsDouble_WhenAgeIsPositive_ReturnsTheLastDateCalculatedToGetAge()
+    {
+        // Arrange
+        DateOnly[] dateOnlies = Create2Dates();
+        DateOnly testDate;
+        var age = dateOnlies[0].AgeCalculator<double>(dateOnlies[1]);
+
+        // Act
+        testDate = dateOnlies[0].AddYears(age);
+
+        // Assert
+        Assert.AreEqual(dateOnlies[1], testDate, $"Test fail when first and second dates {nameof(dateOnlies)} are: {dateOnlies[0]} and {dateOnlies[1]} which has an {nameof(age)} value of: {age}.");
+    }
+    [TestMethod]
+    public void AddYearsDouble_FirstDateNotOn29February_WhenAgeIsNegative_ReturnsTheFirstDateCalculatedToGetAge()
+    {
+        // Arrange
+        DateOnly[] dateOnlies = Create2Dates();
+        DateOnly testDate;
+        var age = dateOnlies[0].AgeCalculator<double>(dateOnlies[1]);
+
+        // Act
+        testDate = dateOnlies[1].AddYears(-age);
+
+        // Assert
+        Assert.AreEqual(dateOnlies[0], testDate, $"Test fail when first and second dates {nameof(dateOnlies)} are: {dateOnlies[0]} and {dateOnlies[1]} which has an {nameof(age)} value of: {age}.");
+    }
+    [TestMethod]
+    public void AddYearsDouble_FirstDateOn29FebruaryAndLastDateNotOnLeapYear_WhenAgeIsNegative_ReturnsFebruary28CalculatedToGetAge()
+    {
+        // Arrange
+        DateOnly[] dateOnlies =
+        {
+                new(2020, 2, 29),
+                new(2025, 3, 3),
+            };
+        DateOnly testDate;
+        var age = dateOnlies[0].AgeCalculator<double>(dateOnlies[1]);
+
+        // Act
+        testDate = dateOnlies[1].AddYears(-age);
+
+        // Assert
+        Assert.AreEqual(dateOnlies[0].AddDays(-1), testDate, $"Test fail when first and second dates {nameof(dateOnlies)} are: {dateOnlies[0]} and {dateOnlies[1]} which has an {nameof(age)} value of: {age}.");
+    }
+    #endregion
+    #region Float
+    [TestMethod]
+    public void AddYearsFloat_WhenAgeIsPositive_ReturnsTheLastDateCalculatedToGetAge()
+    {
+        // Arrange
+        DateOnly[] dateOnlies = Create2Dates();
+        DateOnly testDate;
+        var age = dateOnlies[0].AgeCalculator<float>(dateOnlies[1]);
+
+        // Act
+        testDate = dateOnlies[0].AddYears(age);
+
+        // Assert
+        Assert.AreEqual(dateOnlies[1], testDate, $"Test fail when first and second dates {nameof(dateOnlies)} are: {dateOnlies[0]} and {dateOnlies[1]} which has an {nameof(age)} value of: {age}.");
+    }
+    [TestMethod]
+    public void AddYearsFloat_FirstDateNotOn29February_WhenAgeIsNegative_ReturnsTheFirstDateCalculatedToGetAge()
+    {
+        // Arrange
+        DateOnly[] dateOnlies = Create2Dates();
+        DateOnly testDate;
+        var age = dateOnlies[0].AgeCalculator<float>(dateOnlies[1]);
+
+        // Act
+        testDate = dateOnlies[1].AddYears(-age);
+
+        // Assert
+        Assert.AreEqual(dateOnlies[0], testDate, $"Test fail when first and second dates {nameof(dateOnlies)} are: {dateOnlies[0]} and {dateOnlies[1]} which has an {nameof(age)} value of: {age}.");
+    }
+    [TestMethod]
+    public void AddYearsFloat_FirstDateOn29FebruaryAndLastDateNotOnLeapYear_WhenAgeIsNegative_ReturnsFebruary28CalculatedToGetAge()
+    {
+        // Arrange
+        DateOnly[] dateOnlies =
+        {
+                new(2020, 2, 29),
+                new(2025, 3, 3),
+            };
+        DateOnly testDate;
+        var age = dateOnlies[0].AgeCalculator<float>(dateOnlies[1]);
+
+        // Act
+        testDate = dateOnlies[1].AddYears(-age);
+
+        // Assert
+        Assert.AreEqual(dateOnlies[0].AddDays(-1), testDate, $"Test fail when first and second dates {nameof(dateOnlies)} are: {dateOnlies[0]} and {dateOnlies[1]} which has an {nameof(age)} value of: {age}.");
+    }
+    #endregion
     #endregion
 }
