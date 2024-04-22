@@ -27,7 +27,7 @@ on:
       - "*.md"
 
 env:
-  DOTNET_VERSION: "7.x"
+  DOTNET_VERSION: "8.x"
   JDK_VERSION: "11"
 
 jobs:
