@@ -1,4 +1,6 @@
-﻿namespace Roseau.DateHelpers;
+﻿using System.Numerics;
+
+namespace Roseau.DateHelpers;
 
 #region Delegate
 public delegate int AgeDiscreteDelegate(DateOnly date, DateOnly calculationDate);
@@ -30,7 +32,8 @@ public static class DateOnlyExtensions
     /// <param name="date1">Date 1</param>
     /// <param name="date2">Date 2</param>
     /// <returns>The exact age</returns>
-    static public decimal AgeCalculator(this DateOnly date1, DateOnly date2)
+    static public TSelf AgeCalculator<TSelf>(this DateOnly date1, DateOnly date2)
+        where TSelf : IFloatingPoint<TSelf>
     {
         DateOnly firstDate = date1.FirstDate(date2);
         DateOnly secondDate = date1.LastDate(date2);
@@ -40,7 +43,7 @@ public static class DateOnlyExtensions
 
         int numberDaysBeforeNearestBirthDay = secondDate.DayOfYear - firstDate.DayOfYear;
         int numberDaysLastYear = numberDaysBeforeNearestBirthDay > 0 ? firstDate.AddYears(1).DayNumber - firstDate.DayNumber : firstDate.DayNumber - firstDate.AddYears(-1).DayNumber;
-        return numberOfYears + (decimal)numberDaysBeforeNearestBirthDay / numberDaysLastYear;
+        return TSelf.CreateSaturating(numberOfYears) + TSelf.CreateSaturating(numberDaysBeforeNearestBirthDay) / TSelf.CreateSaturating(numberDaysLastYear);
     }
     /// <summary>
     /// Age at the nearest birthday.
@@ -50,7 +53,7 @@ public static class DateOnlyExtensions
     /// <returns>The round age at the calculation date.</returns>
     static public int AgeNearestBirthday(this DateOnly date1, DateOnly calculationDate)
     {
-        return (int)Math.Round(AgeCalculator(date1, calculationDate));
+        return (int)Math.Round(AgeCalculator<float>(date1, calculationDate));
     }
     /// <summary>
     /// Age at the last birthday.
@@ -60,7 +63,7 @@ public static class DateOnlyExtensions
     /// <returns>The last full integer age at the calculation date.</returns>
     static public int AgeLastBirthday(this DateOnly date1, DateOnly calculationDate)
     {
-        return (int)AgeCalculator(date1, calculationDate);
+        return (int)AgeCalculator<float>(date1, calculationDate);
     }
     #endregion 
 
@@ -70,9 +73,10 @@ public static class DateOnlyExtensions
     /// </summary>
     /// <param name="date">The instance of DateTime</param>
     /// <returns>The partial year elapsed from the start of the year.</returns>
-    static public decimal TimeElapsedFromStartOfYear(this DateOnly date)
+    static public TSelf TimeElapsedFromStartOfYear<TSelf>(this DateOnly date)
+        where TSelf : IFloatingPoint<TSelf>
     {
-        return AgeCalculator(new DateOnly(date.Year, 1, 1), date);
+        return AgeCalculator<TSelf>(new DateOnly(date.Year, 1, 1), date);
     }
     /// <summary>
     /// Difference of time elapsed from the start of the year between two dates.
@@ -80,11 +84,12 @@ public static class DateOnlyExtensions
     /// <param name="date1">Date 1</param>
     /// <param name="date2">Date 2</param>
     /// <returns>The partial year elapsed from the start of the year.</returns>
-    static public decimal DifferenceOfTimeElapsedFromStartOfYear(this DateOnly date1, DateOnly date2)
+    static public TSelf DifferenceOfTimeElapsedFromStartOfYear<TSelf>(this DateOnly date1, DateOnly date2)
+        where TSelf : IFloatingPoint<TSelf>
     {
-        if (date1 > date2) return AgeCalculator(new DateOnly(date2.Year, 1, 1), date1) - date2.TimeElapsedFromStartOfYear();
+        if (date1 > date2) return AgeCalculator<TSelf>(new DateOnly(date2.Year, 1, 1), date1) - date2.TimeElapsedFromStartOfYear<TSelf>();
 
-        return AgeCalculator(new DateOnly(date1.Year, 1, 1), date2) - date1.TimeElapsedFromStartOfYear();
+        return AgeCalculator<TSelf>(new DateOnly(date1.Year, 1, 1), date2) - date1.TimeElapsedFromStartOfYear<TSelf>();
     }
 
     static public int NumberOfCompleteYears(this DateOnly firstDate, DateOnly secondDate)
@@ -194,14 +199,54 @@ public static class DateOnlyExtensions
     /// <param name="date">Basis date</param>
     /// <param name="numberOfYears">Number of years</param>
     /// <returns>The date resulted from the addition of years</returns>
-    static public DateOnly AddYears(this DateOnly date, decimal numberOfYears)
+    static public DateOnly AddYears<TSelf>(this DateOnly date, TSelf numberOfYears)
+        where TSelf : IFloatingPoint<TSelf>
     {
-        decimal test365 = (numberOfYears - (int)numberOfYears) * 365;
-        decimal test366 = (numberOfYears - (int)numberOfYears) * 366;
+        return numberOfYears switch
+        {
+            float years => date.AddYearsFloat(years),
+            double years => date.AddYearsDouble(years),
+            decimal years => date.AddYearsDecimal(years),
+            _ => date.AddYearsFloatingPoint(numberOfYears),
+        };
+    }
+    static private DateOnly AddYearsDecimal(this DateOnly date, decimal numberOfYears)
+    {
+        decimal test365 = (numberOfYears - (int)numberOfYears) * 365m;
+        decimal test366 = (numberOfYears - (int)numberOfYears) * 366m;
         int numberOfDaysLastYear = Math.Abs(Math.Round(test365) - test365) < Math.Abs(Math.Round(test366) - test366) ? (int)Math.Round(test365) : (int)Math.Round(test366);
-        if (numberOfYears < 0)
+        if (numberOfYears < 0m)
             return date.AddDays(numberOfDaysLastYear).AddYears((int)numberOfYears);
         return date.AddYears((int)numberOfYears).AddDays(numberOfDaysLastYear);
+    }
+    static private DateOnly AddYearsDouble(this DateOnly date, double numberOfYears)
+    {
+        var test365 = (numberOfYears - (int)numberOfYears) * 365d;
+        var test366 = (numberOfYears - (int)numberOfYears) * 366d;
+        int numberOfDaysLastYear = Math.Abs(Math.Round(test365) - test365) < Math.Abs(Math.Round(test366) - test366) ? (int)Math.Round(test365) : (int)Math.Round(test366);
+        if (numberOfYears < 0d)
+            return date.AddDays(numberOfDaysLastYear).AddYears((int)numberOfYears);
+        return date.AddYears((int)numberOfYears).AddDays(numberOfDaysLastYear);
+    }
+    static private DateOnly AddYearsFloat(this DateOnly date, float numberOfYears)
+    {
+        float test365 = (numberOfYears - (int)numberOfYears) * 365f;
+        float test366 = (numberOfYears - (int)numberOfYears) * 366f;
+        int numberOfDaysLastYear = Math.Abs(Math.Round(test365) - test365) < Math.Abs(Math.Round(test366) - test366) ? (int)Math.Round(test365) : (int)Math.Round(test366);
+        if (numberOfYears < 0f)
+            return date.AddDays(numberOfDaysLastYear).AddYears((int)numberOfYears);
+        return date.AddYears((int)numberOfYears).AddDays(numberOfDaysLastYear);
+    }
+    static private DateOnly AddYearsFloatingPoint<TSelf>(this DateOnly date, TSelf numberOfYears)
+        where TSelf : IFloatingPoint<TSelf>
+    {
+        var truncatedNumberOfYears = TSelf.Truncate(numberOfYears);
+        var test365 = (numberOfYears - truncatedNumberOfYears) * TSelf.CreateSaturating(365);
+        var test366 = (numberOfYears - truncatedNumberOfYears) * TSelf.CreateSaturating(366);
+        int numberOfDaysLastYear = TSelf.Abs(TSelf.Round(test365) - test365) < TSelf.Abs(TSelf.Round(test366) - test366) ? int.CreateSaturating(TSelf.Round(test365)) : int.CreateSaturating(TSelf.Round(test366));
+        if (numberOfYears < TSelf.CreateSaturating(0))
+            return date.AddDays(numberOfDaysLastYear).AddYears(int.CreateSaturating(numberOfYears));
+        return date.AddYears(int.CreateSaturating(numberOfYears)).AddDays(numberOfDaysLastYear);
     }
     #endregion
 }
