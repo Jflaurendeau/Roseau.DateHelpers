@@ -27,8 +27,8 @@ on:
       - "*.md"
 
 env:
-  DOTNET_VERSION: "7.x"
-  JDK_VERSION: "11"
+  DOTNET_VERSION: "8.x"
+  JDK_VERSION: "17"
 
 jobs:
   Build-and-Tests:
@@ -50,7 +50,7 @@ jobs:
       - name: Run tests 🩺🔬🧑‍🔬
         run: dotnet test -c Release --no-restore
 
-      - name: Set up JDK 11 (For SonarCloud) ⚒️
+      - name: Set up JDK 17 (For SonarCloud) ⚒️
         uses: actions/setup-java@v3
         with:
           java-version: ${{ env.JDK_VERSION }}
@@ -83,10 +83,10 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-             .\.sonar\scanner\dotnet-sonarscanner begin /k:"Jflaurendeau_Roseau.DateHelpers" /o:"jflaurendeau" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=".\tests\Roseau.DateHelpers.UnitTests\TestResults\coverage.xml"
+             .\.sonar\scanner\dotnet-sonarscanner begin /k:"Jflaurendeau_Roseau.DateHelpers" /o:"jflaurendeau" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=".\tests\Roseau.DateHelpers.UnitTests\TestResults\coverage.xml"
              dotnet build
-             coverlet .\tests\Roseau.DateHelpers.UnitTests\bin\Debug\net7.0\Roseau.DateHelpers.UnitTests.dll --target "dotnet" --targetargs "test --no-build --no-restore" -f=opencover -o=".\tests\Roseau.DateHelpers.UnitTests\TestResults\coverage.xml"
-             .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+             coverlet .\tests\Roseau.DateHelpers.UnitTests\bin\Debug\net8.0\Roseau.DateHelpers.UnitTests.dll --target "dotnet" --targetargs "test --no-build --no-restore" -f=opencover -o=".\tests\Roseau.DateHelpers.UnitTests\TestResults\coverage.xml"
+             .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
   Semantic-versioning:
     runs-on: ubuntu-latest
     needs: Build-and-Tests
