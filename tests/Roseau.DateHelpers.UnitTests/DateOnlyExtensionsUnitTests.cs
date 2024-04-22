@@ -1676,5 +1676,54 @@ public class DateOnlyExtensionTests
         Assert.AreEqual(dateOnlies[0].AddDays(-1), testDate, $"Test fail when first and second dates {nameof(dateOnlies)} are: {dateOnlies[0]} and {dateOnlies[1]} which has an {nameof(age)} value of: {age}.");
     }
     #endregion
+    #region Half
+    [TestMethod]
+    public void AddYearsHalf_WhenAgeIsPositive_ReturnsTheLastDateCalculatedToGetAge()
+    {
+        // Arrange
+        DateOnly[] dateOnlies = Create2Dates();
+        DateOnly testDate;
+        var age = dateOnlies[0].AgeCalculator<Half>(dateOnlies[1]);
+
+        // Act
+        testDate = dateOnlies[0].AddYears(age);
+
+        // Assert
+        Assert.AreEqual(dateOnlies[1], testDate, $"Test fail when first and second dates {nameof(dateOnlies)} are: {dateOnlies[0]} and {dateOnlies[1]} which has an {nameof(age)} value of: {age}.");
+    }
+    [TestMethod]
+    public void AddYearsHalf_FirstDateNotOn29February_WhenAgeIsNegative_ReturnsTheFirstDateCalculatedToGetAge()
+    {
+        // Arrange
+        DateOnly[] dateOnlies = Create2Dates();
+        DateOnly testDate;
+        var age = dateOnlies[0].AgeCalculator<Half>(dateOnlies[1]);
+
+        // Act
+        testDate = dateOnlies[1].AddYears(-age);
+
+        // Assert
+        Assert.AreEqual(dateOnlies[0], testDate, $"Test fail when first and second dates {nameof(dateOnlies)} are: {dateOnlies[0]} and {dateOnlies[1]} which has an {nameof(age)} value of: {age}.");
+    }
+    [TestMethod]
+    public void AddYearsHalf_FirstDateOn29FebruaryAndLastDateNotOnLeapYear_WhenAgeIsNegative_ReturnsFebruary28CalculatedToGetAge()
+    {
+        // Arrange
+        DateOnly[] dateOnlies =
+        {
+                new(2020, 2, 29),
+                new(2025, 3, 3),
+            };
+        DateOnly testDate;
+        var age = dateOnlies[0].AgeCalculator<Half>(dateOnlies[1]);
+
+        // Act
+        testDate = dateOnlies[1].AddYears(-age);
+
+        // Assert
+        Assert.AreEqual(dateOnlies[0].AddDays(-1), testDate, $"Test fail when first and second dates {nameof(dateOnlies)} are: {dateOnlies[0]} and {dateOnlies[1]} which has an {nameof(age)} value of: {age}.");
+    }
+    #endregion
+
     #endregion
 }
